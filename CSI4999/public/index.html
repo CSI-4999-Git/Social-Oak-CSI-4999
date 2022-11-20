@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!--this header code allows to have the screen go over the notch-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover,user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta charset="UTF-8">
+    <script src = ./modules/jquery.js></script>
+    <script type="text/javascript" src="./modules/xlsx.js"></script>
+    <script  src="./modules/lzutf8.js"></script>
+    <script src="./modules/chart.js"></script>
+    <script src="./modules/vue.js"></script>
+    <script src="./modules/socket.io.js"></script>
+    <script type="text/javascript" src="./modules/FileSaver.js"></script>
+    <script src="./modules/moment.js"></script>
+    <script src="./modules/axios.js"></script>
+<!--    <link rel="apple-touch-icon" href="./photos/logo.png">-->
+    <style>
+        @font-face {
+            font-family: 'home_font', sans-serif; src: url("../fonts/Poppins-Regular.ttf") format('truetype');
+        }
+        :root {
+            --blockColor  : #f4f4f4;
+            --backColor   : #ffffff;
+            --sidebarColor: #777777;
+            --buttonColor : #a1a1a1;
+            --hoverColor  : #000000;
+            --loadingBar  : green;
+            --loadingBar2 : #00bd00;
+            --loadingBar3 : #00cc00;
+            --loadingBar4 : #00ff00;
+        }
+
+
+        body                                { background-color: var(--backColor); margin: 0; padding: 0;-webkit-user-select: none; -ms-user-select: none; -moz-user-select: none; user-select: none; }
+
+        #vueApp                             { position: absolute; height: 100%; width: 100%;   }
+
+        /*if vueApp is set to fixed positioning, app will have no overflow! kind of interesting*/
+
+        .box{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+
+            height: 400px;
+            width: 600px;
+            background-color: var(--blockColor);
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+            border-radius: 10px;
+        }
+
+        .input_con{
+            position: relative;
+            height: auto;
+            width: 200px;
+
+            left: 50%;
+            transform: translate(-50%);
+            top: 75px;
+        }
+
+        .text{
+            position: relative;
+            height: 40px;
+            width: 200px;
+            line-height: 50px;
+
+            font-family: 'home_font', sans-serif;
+            font-size: 1em;
+            border-radius: 10px;
+            border:none;
+            margin-bottom: 25px;
+            text-align: center;
+
+        }
+
+        .si_btn{
+            position: relative;
+            top: 100px;
+            height: 45px;
+            width: 150px;
+            background-color: cornflowerblue;
+            color: white;
+            font-family: 'home_font', sans-serif;
+            font-size: 1em;
+            border: none;
+            border-radius: 50px;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            left: 50%;
+
+            transform: translate(-50%);
+            cursor: pointer;
+
+        }
+
+        .link{
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-family: 'home_font', sans-serif;
+            font-size: .8em;
+            color: #858585;
+            cursor: pointer;
+            padding: 5px;
+
+        }
+
+        .link2{
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-family: 'home_font', sans-serif;
+            font-size: .8em;
+            color: #858585;
+            cursor: pointer;
+            padding: 5px;
+
+        }
+
+        .title{
+            font-family: 'home_font', sans-serif;
+            font-size: 3em;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            color: #909fc5;
+            left: 50%;
+            transform: translate(-50%);
+            top: 140px;
+            position: relative;
+        }
+
+        .acorn{
+            position: absolute;
+            height: auto;
+            width: 50%;
+        }
+
+        .con{
+            height: auto;
+        }
+
+        .profileTopBoarder{
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 300px;
+            background-color: #1c72ab;
+        }
+
+        .pPhoto{
+            position: absolute;
+            top:50%;
+            height: 250px;
+            width: 250px;
+            left: 50%;
+            transform: translate(-50%,0);
+            border-radius: 50%;
+            background-color: #d2d2d2;
+            overflow: hidden;
+
+        }
+
+        img{
+            position: relative;
+            height: auto;
+            width: 250px;
+        }
+
+        .imgClass{
+            position: relative;
+            height: auto;
+            width: 25px;
+            top: 6px;
+        }
+
+        .pTitle{
+            position: relative;
+            top: 400px;
+            font-family: 'home_font', sans-serif;
+            color: #2a2828;
+            font-size: 20px;
+            text-align: center;
+            line-height: 60px;
+            height: 60px;
+            width: auto;
+
+
+        }
+
+        /*.profile_con{*/
+        /*    height: 3000px;*/
+        /*}*/
+
+
+        /*scroll source*/
+        .greySubBackground{
+            position: relative;
+            top: 50px;
+            height: 500px;
+            width: 100%;
+            background-color: #f5f5f5;
+            /*overflow: auto;*/
+        }
+
+
+
+        .white_container{
+            position: relative;
+            top: 20px;
+            width: 99%;
+            height: 300px;
+            left: 50%;
+            transform: translate(-50%,0);
+            background-color: white;
+            border-radius: 25px;
+
+
+        }
+
+        .about_container{
+            position: relative;
+            top: 75px;
+            height: 300px;
+            width: 100%;
+            background-color: #ffffff;
+            border: black solid;
+        }
+
+        tr,td,th,table{
+            border: black solid
+        }
+
+        .aTitle{
+            text-align: left;
+        }
+
+        .campusIndicator{
+            font-size: 16px;
+            position: relative;
+            top: -32px;
+            font-weight: bold;
+
+        }
+
+        .divCol {
+            float: left;
+            width: 50%;
+            /*padding: 10px;*/
+            /*height: 400px; !* Should be removed. Only for demonstration *!*/
+        }
+
+        /* Clear floats after the columns */
+
+        .divRow{
+            position: relative;
+            width: 60%;
+            left: 50%;
+            transform: translate(-50%,0);
+
+            height: 300px;
+        }
+
+
+        .divRow:after {
+            content: "";
+            display: table;
+            clear: both;
+            width: 80%;
+            left: 50%;
+            transform: translate(-50%,0);
+        }
+
+        .icon{
+            position: relative;
+            height: auto;
+            width: 12px;
+            margin-right: 5px;
+        }
+
+        .sub_contain{
+            height: 160px;
+            width: 100%;
+            position: relative;
+            text-align: left;
+            line-height: 23px;
+        }
+
+        ul{
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            line-height: 42px;
+        }
+
+        .username{
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .subTitle{
+            font-size: 26px;
+            font-weight: bold;
+            color: #126da8;
+        }
+
+        .desc{
+            font-size: 16px;
+        }
+
+        .extras{
+            position: absolute;
+            right: 0;
+            text-align: right;
+            width: 700px;
+            transform: translate(-50%, 0);
+            left: 50%;
+            top: 328px;
+            font-family: 'home_font', sans-serif;
+        }
+
+
+        .nav_bar{
+            position: fixed;
+            width: 100%;
+            height: 60px;
+            background-color: #0c486e;
+            color: white;
+            font-family: 'home_font', sans-serif;
+
+
+        }
+
+        .li_nav{
+            position: relative;
+            display: inline-block;
+            padding: 10px;
+            cursor: pointer;
+
+
+        }
+
+        .login_nav{
+            position: absolute;
+            top: 0;
+        }
+
+        .main_contain{
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            /*background-color: green;*/
+
+        }
+
+        .sidebar{
+            position: relative;
+            /*left: 0;*/
+            width: 100%;
+            height: 100%;
+            background-color: #f6f6fa;
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+        }
+
+        .chatTab{
+            position: relative;
+            height: 60px;
+            width: 90%;
+            left: 50%;
+            transform: translate(-50%,0);
+            background-color: #e2e2e4;
+            top: 87px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .blue:active{
+            color: white;
+        }
+        .blue{
+            position: relative;
+            height: 60px;
+            width: 90%;
+            left: 50%;
+            transform: translate(-50%,0);
+            background-color: #5283a2;
+            top: 87px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .chatTab:hover{
+            cursor: pointer;
+            /*background-color: rgba(226, 226, 228, 0.45);*/
+            /*border: 1px solid white;*/
+        }
+
+        /*.chatTab:active{*/
+        /*   background-color: #696969;*/
+        /*    color: white;*/
+        /*    !*border: 1px solid white;*!*/
+        /*}*/
+
+        .otherPerson{
+            position: relative;
+            height: 60px;
+            width: 100%;
+            top: 50%;
+            transform: translate(0,-50%);
+            line-height: 60px;
+            text-align: center;
+            font-family: 'home_font', sans-serif ;
+            font-size: 1.1em;
+            color: #000000;
+
+        }
+
+        .chatWindow{
+            position: relative;
+            top: 0;
+            background-color: #fdfdfd;
+            height: 100%;
+            width:100%;
+
+        }
+
+
+        .table_div2{
+            position: absolute;
+            width: 100%;
+            top: 72px;
+            height: 100%;
+            left: 50%;
+            transform: translate(-50%,0);
+            /*border: solid white;*/
+        }
+
+        .column_div2{
+            position: relative;
+            /* float: left; */
+            display: inline-block;
+            height: 100%;
+            /* border: solid white; */
+            margin: 10px;
+        }
+
+        .table_div{
+            position: absolute;
+            width: 99%;
+            top: 0px;
+            height: 100%;
+            left: 50%;
+            transform: translate(-50%,0);
+            /*border: solid white;*/
+        }
+
+        .column_div{
+            position: relative;
+            float: left;
+            height: 100%;
+            /*border: solid white;*/
+        }
+
+        /*table{*/
+        /*    border: none;*/
+        /*}*/
+
+
+        .bubble_window{
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%,0);
+            top: 100px;
+            height: 80%;
+            width: 97%;
+            background-color: #f7f7f7;
+            overflow: auto;
+            border-top-right-radius: 20px;
+            border-top-left-radius: 20px;
+        }
+
+        .msg{
+            position: relative;
+            height:60px;
+            width: 85%;
+            transform: translate(-50%,0);
+            left: 50%;
+            font-family: 'home_font', sans-serif;
+            color: #2a2828;
+            font-size: 20px;
+            /*background-color: cadetblue;*/
+            line-height: 60px;
+
+
+        }
+
+        .input_bar{
+            position: absolute;
+            bottom: 25px;
+            height: 60px;
+            width: 97%;
+            left: 50%;
+            transform: translate(-50%,0);
+            background-color: #e0e0e2;
+            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .send_btn{
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            height: 45px;
+            line-height: 45px;
+            background-color: grey;
+            text-align: center;
+            font-family: 'home_font', sans-serif;
+            font-size: 20px;
+            border-radius: 20px;
+            color: white;
+            top: 50%;
+            transform: translate(0,-50%);
+            left: 2%;
+        }
+
+        .send_btn:hover{
+            cursor: pointer;
+            background-color: rgba(226, 226, 228, 0.45);
+            color: #2a2828;
+            border: 1px solid white;
+        }
+
+        .send_btn:active{
+            background-color: #484848;
+            color: white;
+        }
+
+        .userIn{
+            position: relative;
+            left: 1%;
+            top: 50%;
+            transform: translate(0,-50%);
+            width: 88%;
+            height: 35px;
+            border-radius: 20px;
+            border: none;
+            font-family: 'home_font', sans-serif;
+            font-size: 20px;
+            padding: 8px;
+            color: #2a2828;
+
+        }
+
+        .time_stamp{
+            position: absolute;
+            height: 100%;
+            width: 70px;
+            left: -80px;
+            top: 0;
+            /*background-color: cornflowerblue;*/
+            font-family: 'home_font', sans-serif;
+            color: #2a2828;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .iconz{
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            width: 50px;
+            height: auto;
+        }
+        .iconz2{
+            position: relative;
+            left: 25px;
+            top: 5px;
+            width: 50px;
+            height: auto;
+        }
+
+        .photo_upload{
+            margin-bottom: 25px;
+        }
+
+
+        .photo_upload:hover{
+            cursor: pointer;
+        }
+
+        .titlePhoto{
+            position:relative;left: 50%; transform: translate(-50%,0); font-family: 'home_font', sans-serif; text-align: center; width: 100%; padding-bottom: 5px;
+        }
+
+        .overflow_con{
+            height: 72%;
+            width: 100%;
+            overflow: auto;
+        }
+
+
+
+        table {
+            font-family: 'home_font', sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            border: none;
+            top: 20px;
+        }
+
+        table td, table th {
+            /*border: 1px solid #ddd;*/
+            border: none;
+            padding: 2px;
+        }
+
+        table tr:nth-child(even){background-color: #f2f2f2;}
+
+        table tr:hover {background-color: #ddd;}
+
+        table th {
+            /*padding-top: 12px;*/
+            /*padding-bottom: 12px;*/
+            text-align: left;
+            background-color: #1c71aa;
+            color: white;
+        }
+
+
+
+
+
+        body::-webkit-scrollbar                                                   { width: 0.4vw;}
+        body::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
+        body::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
+
+        .bubble_window::-webkit-scrollbar                                                   { width: 0.4vw;}
+        .bubble_window::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
+        .bubble_window::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
+
+        .overflow_con::-webkit-scrollbar                                                   { width: 0.4vw;}
+        .overflow_con::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
+        .overflow_con::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
+
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .2s;
+        }
+
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+
+    </style>
+
+    <title>Social Oak</title>
+
+</head>
+
+<body>
+
+<div id = vueApp>
+
+    <transition name = fade>
+        <div class = starting_con v-show="starting_pages.state">
+            <div class = title>Social Oak<img src="photos/acorn2.png" class = iconz2></div>
+            <sign_in class = sign_in_comp v-if="starting_pages.sub_state.sign_in"></sign_in>
+            <sign_up class = sign_up_comp v-if="starting_pages.sub_state.sign_up"></sign_up>
+            <forgot class = sign_up_comp v-if="starting_pages.sub_state.forgot"></forgot>
+        </div>
+    </transition>
+
+    <transition name = fade>
+        <div class = profile_con v-show="profile_pages.state">
+            <transition name = fade><main_profile class = main_profile v-show="profile_pages.sub_state.profile"></main_profile></transition>
+            <transition name = fade><chat class = chat v-show="profile_pages.sub_state.chat"></chat></transition>
+            <nav_vue class = login_nav></nav_vue>
+        </div>
+    </transition>
+
+</div>
+
+<script>
+
+
+
+    let webSocket                                      = io.connect(location.host);
+    let msg
+    let diagnostic                                     = false;
+
+
+    webSocket.on('connect', ()=>{
+
+    })
+
+    Vue.component('nav_vue', {
+        template:
+            `
+              <div>
+                <nav v-for="index in this.nav" class = nav_bar>
+                  <ul>
+                    <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item}}</li>
+                  </ul>
+                  <img src="photos/acorn2.png" class = iconz>
+                </nav>
+              </div>
+
+            `,
+        data(){
+            return {
+                nav:[
+                    [
+                        // 'Home',
+                        'Profile',
+                        // 'Discovery',
+                        'Chat',
+                        'Sign Out',
+                    ]
+                ]
+
+            }
+        },
+        methods: {
+            goToPage(page){
+                app.$root.$emit('go_to_page', page); //changes the page to the one the user clicks....
+            }
+        },
+        computed:{
+
+        },
+        mounted(){
+
+        }
+    })
+
+
+
+    Vue.component('sign_in', {
+        template:
+            `
+                <div>
+                <div class = box>
+                  <div class = input_con>
+                    <input type="text" class="text" id="username" placeholder="Username" v-model="username">
+                    <input type="password" class = "text" id="password" placeholder="Password" v-model="password" >
+                  </div>
+                  <button class = si_btn @click="signIn()">Sign In</button>
+                  <div class = link @click="signUp()">Don't have an account? Sign up</div>
+                  <div class = link2 @click="forgot()">Forgot Password?</div>
+                </div>
+
+                </div>
+
+            `,
+        data(){
+            return {
+                username:'',
+                password:'',
+
+            }
+        },
+        methods: {
+            signUp(){
+                app.$root.$emit('signup_page');
+            },
+            forgot(){
+                app.$root.$emit('forgot');
+            },
+            signIn(){
+                webSocket.emit('js', JSON.stringify({type:'authCheck', data:{username:this.username, password:this.password}}))
+
+
+                // app.$root.$emit('sign_in_to_profile'); // event
+            }
+
+        },
+        computed:{
+
+        },
+        mounted(){
+
+        }
+    })
+    Vue.component('sign_up', {
+        template:
+            `
+                <div>
+                <div class = box style="height: 740px; top: 60%;" >
+                  <div class = overflow_con>
+                  <div class = input_con style="top:17px; ">
+                    <input type="text" class="text" placeholder="Email" v-model="sign_up_obj.email">
+                    <input type="text" class="text"  placeholder="First name" v-model="sign_up_obj.fname">
+                    <input type="text" class="text"  placeholder="Last name" v-model="sign_up_obj.lname">
+                    <input type="password" class="text"  placeholder="Password" v-model="sign_up_obj.password">
+                    <input type="text" class = "text"   placeholder="University" v-model="sign_up_obj.uni">
+                    <input type="text" class = "text"  placeholder="Major" v-model="sign_up_obj.major">
+                    <input type="text" class = "text"  placeholder="Class Standing" v-model="sign_up_obj.cls">
+                    <input type="text" class = "text"   placeholder="Quick Description" v-model="sign_up_obj.desc">
+                    <input type="text" class = "text"  placeholder="Job" v-model="sign_up_obj.job">
+<!--                    <input type="text" class = "text"  placeholder="Extra 1" v-model="sign_up_obj.extra1">-->
+<!--                    <input type="text" class = "text"  placeholder="Extra 2" v-model="sign_up_obj.extra2">-->
+<!--                    <input type="text" class = "text"  placeholder="Extra 3" v-model="sign_up_obj.extra3">-->
+                    <input type="text" class = "text"  placeholder="Class 1 Name" v-model="sign_up_obj.class1_name">
+                    <input type="text" class = "text"  placeholder="Class 1 Starting Time" v-model="sign_up_obj.class1_start">
+                    <input type="text" class = "text"  placeholder="Class 1 Ending Time" v-model="sign_up_obj.class1_end">
+                    <input type="text" class = "text"  placeholder="Class 1 Building" v-model="sign_up_obj.class1_build">
+
+                    <input type="text" class = "text"  placeholder="Class 2 Name" v-model="sign_up_obj.class2_name">
+                    <input type="text" class = "text"  placeholder="Class 2 Starting Time" v-model="sign_up_obj.class2_start">
+                    <input type="text" class = "text"  placeholder="Class 2 Ending Time" v-model="sign_up_obj.class2_end">
+                    <input type="text" class = "text"  placeholder="Class 2 Building" v-model="sign_up_obj.class2_build">
+
+                    <input type="text" class = "text"  placeholder="Class 3 Name" v-model="sign_up_obj.class3_name">
+                    <input type="text" class = "text"  placeholder="Class 3 Starting Time" v-model="sign_up_obj.class3_start">
+                    <input type="text" class = "text"  placeholder="Class 3 Ending Time" v-model="sign_up_obj.class3_end">
+                    <input type="text" class = "text"  placeholder="Class 3 Building" v-model="sign_up_obj.class3_build">
+
+                    <input type="text" class = "text"  placeholder="Class 4 Name" v-model="sign_up_obj.class4_name">
+                    <input type="text" class = "text"  placeholder="Class 4 Starting Time" v-model="sign_up_obj.class4_start">
+                    <input type="text" class = "text"  placeholder="Class 4 Ending Time" v-model="sign_up_obj.class4_end">
+                    <input type="text" class = "text"  placeholder="Class 4 Building" v-model="sign_up_obj.class4_build">
+
+                    <div style="text-align: center; font-family: 'home_font', sans-serif; ">On Campus?</div>
+                    <input type="checkbox" class = "text"  placeholder="On Campus?" v-model="sign_up_obj.on_campus">
+                    <input type="text" class = "text"  placeholder="Hobby 1" v-model="sign_up_obj.hob1">
+                    <input type="text" class = "text"  placeholder="Hobby 2" v-model="sign_up_obj.hob2">
+                    <input type="text" class = "text"  placeholder="Hobby 3" v-model="sign_up_obj.hob3">
+
+                    <div class = titlePhoto>Profile Photo Upload</div>
+                    <input type="file" class = photo_upload style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg" >
+                  </div>
+                    </div>
+                  <button class = si_btn @click="createUser()">Sign Up</button>
+                  <div class = link @click="signIn()">Go Back</div>
+                </div>
+                </div>
+
+            `,
+        data(){
+            return {
+                sign_up_obj:{
+                    email:'',
+                    fname:'',
+                    lname:'',
+                    password:'',
+                    uni:'',
+                    major:'',
+                    cls:'',
+                    desc:'',
+                    job:'',
+                    extra1:'',
+                    extra2:'',
+                    extra3:'',
+                    on_campus:'',
+                    hob1:'',
+                    hob2:'',
+                    hob3:'',
+                    class1_name:'',
+                    class1_start:'',
+                    class1_end:'',
+                    class1_build:'',
+                    class2_name:'',
+                    class2_start:'',
+                    class2_end:'',
+                    class2_build:'',
+                    class3_name:'',
+                    class3_start:'',
+                    class3_end:'',
+                    class3_build:'',
+                    class4_name:'',
+                    class4_start:'',
+                    class4_end:'',
+                    class4_build:'',
+
+                },
+                forSql:{}
+            }
+        },
+        methods: {
+            signUp(){
+
+                webSocket.emit('js', JSON.stringify({type:'create_user', data:{}}))
+
+
+
+                // app.$root.$emit('signup_page');
+            },
+            signIn(){
+                app.$root.$emit('signin_page');
+            },
+            createUser(){
+
+                webSocket.emit('js', JSON.stringify({type:'setUserFileName', data:`${this.forSql.email}.user`})) // sets name of user file....
+
+
+                let defaultObj = this.forSql;
+                let defaultObjBlob = new Blob([JSON.stringify(defaultObj)], {type: 'text/plain'}); //default data...
+                let defaultObjForm = new FormData();
+                defaultObjForm.set('file', defaultObjBlob);
+
+
+                axios.post(`./users`, defaultObjForm, {
+
+                    onUploadProgress: progressEvent => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+                        console.log(percentCompleted);
+
+                    }
+                })
+                    .then(res => {
+                        if(diagnostic){console.log(res.data)}
+
+                        if(res.data === 'OK'){
+
+                            app.$root.$emit('populate_profile', this.forSql); // populates the profile page....
+
+                            console.log(`user created!`);
+
+                            app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                        }
+                    });
+
+
+                webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql}));
+            }
+
+        },
+        computed:{
+
+        },
+        mounted(){
+
+            this.$root.$on('upload_complete',(name)=>{
+                let path = name.replaceAll('"',"");
+                console.log(path);
+
+                this.forSql = {};
+
+                this.forSql = this.sign_up_obj;
+                this.forSql['photoPath'] = `./profile_photos/${path}`;
+
+                console.log(this.forSql);
+
+
+            })
+
+        }
+    })
+    Vue.component('forgot', {
+        template:
+            `
+                <div>
+                <div class = box>
+                  <div class = input_con>
+                    <input type="text" class="text" id="username" placeholder="Email" onclick="document.getElementById('username').Placeholder = ''">
+                  </div>
+                  <button class = si_btn>Reset Password</button>
+                  <div class = link @click="signIn()">Go Back</div>
+                </div>
+
+                </div>
+
+            `,
+        data(){
+            return {
+
+            }
+        },
+        methods: {
+            signUp(){
+                app.$root.$emit('signup_page');
+            },
+            signIn(){
+                app.$root.$emit('signin_page');
+            }
+        },
+        computed:{
+
+        },
+        mounted(){
+
+        }
+    })
+
+    Vue.component('main_profile', {
+        template:
+            `
+              <div>
+              <div class=profileTopBoarder v-for="index in this.profile">
+                <div class=pPhoto>
+                  <img :src='index.IMG'>
+                </div>
+                <div class = extras>
+                  <ul v-for="extra in index.extras">
+                    <li class="desc"><img :src= 'extra.img' class = imgClass >{{ extra.item }}</li>
+                  </ul>
+                </div>
+                <div class = pTitle>
+                  <div class = username>{{ index.username }}</div>
+                  <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
+                  <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+                  <div class=divRow>
+                    <div class=divCol>
+                      <div class=sub_contain>
+                        <div class = subTitle>Here For...</div>
+                        <div class=desc>{{ index.desc }}</div>
+                      </div>
+                      <div class=sub_contain>
+                        <div class = subTitle>Hobbies & Interests</div>
+                        <ul v-for="hob in index.hobs">
+                          <li class="desc">{{ hob }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class=divCol>
+                      <div class = subTitle>Mutual Connections</div>
+                      <div class=mutualConProfilePhotosBox>
+                        <div class=pPhoto_small>
+                          <img :src='index.friendIMG' class=fImage>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class=greySubBackground>
+                    <div class=white_container>
+                      <div class="table_div2">
+                        <div class="column_div2" v-for="item in index.classes">
+                          <div class = schd_box>
+                            <table>
+                              <tr>
+                                <th>Class</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Building</th>
+                              </tr>
+                              <tr>
+                                <td>{{item.class}}</td>
+                                <td>{{item.startTime}}</td>
+                                <td>{{item.endTime}}</td>
+                                <td>{{item.building}}</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+            `,
+        data(){
+            return {
+                // profile:[
+                //     {
+                //         username:'Lawrence Jasper',
+                //         on_campus: true,
+                //         IMG:'./photos/test.jpg',
+                //         school:'Oakland University',
+                //         job:'Software Engineer',
+                //         degree:'Information Technology',
+                //         extras:[
+                //             {item:'Senior, Undergraduate', img:'./photos/hat.png'},
+                //             {item:'Information Technology', img:'./photos/net.png'},
+                //         ],
+                //         hobs:[
+                //             'Learning',
+                //             'Working',
+                //             'Anime',
+                //             'Life',
+                //         ],
+                //         desc:'Here for something new, want to meet new people without having to worry about safety.',
+                //         classes:[
+                //             {class:'class1',startTime:'9:00AM', endTime:'5:00PM', building:'1A'},
+                //             {class:'class2',startTime:'9:00AM', endTime:'5:00PM', building:'2A'},
+                //             {class:'class3',startTime:'9:00AM', endTime:'5:00PM', building:'3A'},
+                //             {class:'class4',startTime:'9:00AM', endTime:'5:00PM', building:'4A'}
+                //         ]
+                //
+                //
+                //     }
+                // ]
+                profile:[]
+
+            }
+        },
+        methods: {
+            signUp(){
+                app.$root.$emit('signup_page');
+            },
+            signIn(){
+                app.$root.$emit('signin_page');
+            }
+        },
+        computed:{
+
+        },
+        mounted(){
+
+            this.$root.$on('populate_profile', (data)=>{
+
+                localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
+
+                this.profile.splice(0);
+
+                console.log(data);
+
+                let newObj = {
+                    username:`${data.fname} ${data.lname}`,
+                    on_campus: data.on_campus,
+                    IMG:data.photoPath,
+                    school:data.uni,
+                    job:data.job,
+                    degree:data.major,
+                    extras:[
+                        {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
+                        {item:`${data.major}`, img:'./photos/net.png'},
+                    ],
+                    hobs:[
+                        data.hob1,
+                        data.hob2,
+                        data.hob3
+                    ],
+                    desc:data.desc,
+                    classes:[
+                        {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
+                        {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
+                        {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
+                        {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
+                    ]
+
+
+                }
+
+                this.profile = [newObj];
+            })
+
+        }
+    })
+    Vue.component('chat', {
+        template:
+            `
+              <div>
+                <div class = main_contain>
+                  <div class = table_div>
+                    <div class = column_div style="width: 15%"><div class = sidebar>
+                      <div class = add_tab>Add</div>
+                      <div class = chatTab  v-for="index in this.chat" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }" >
+                        <div class = otherPerson @click="populateChatWindow(index)">{{index.otherPerson}}</div>
+                      </div>
+                    </div>
+                    </div>
+                    <div class = column_div style="width: 85%">
+                      <div class = chatWindow>
+                      <div class = bubble_window>
+                        <div class = msg v-for="thing in this.chatWindowArray">{{thing.msg}}
+                          <div class = time_stamp>{{thing.timestamp}}</div>
+                        </div>
+                      </div>
+                        <div class = input_bar>
+                          <input type="text" class = userIn v-model="inputText">
+                          <div class = send_btn @click="appendTextToChat()">Send</div>
+                        </div>
+                    </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            `,
+        data(){
+            return {
+                chat:[
+                    {
+                        otherPerson:'Rick',
+                        chat:[
+                            {to:'Larry', from:'Rick', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Rick', from:'Larry', timestamp:'2:07 PM', msg:'Hello Rick!'},
+                            {to:'Larry', from:'Rick', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Larry',
+                        chat:[
+                            {to:'Larry', from:'Rick', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Rick', from:'Larry', timestamp:'2:07 PM', msg:'Hello Rick!'},
+                            {to:'Larry', from:'Rick', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Sarah',
+                        chat:[
+                            {to:'Larry', from:'Sarah', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Sarah', from:'Larry', timestamp:'2:07 PM', msg:'Hello Sarah!'},
+                            {to:'Larry', from:'Sarah', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Emily',
+                        chat:[
+                            {to:'Larry', from:'Rick', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Rick', from:'Larry', timestamp:'2:07 PM', msg:'Hello Rick!'},
+                            {to:'Larry', from:'Rick', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Austin',
+                        chat:[
+                            {to:'Larry', from:'Austin', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Austin', from:'Larry', timestamp:'2:07 PM', msg:'Hello Austin!'},
+                            {to:'Larry', from:'Austin', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                ],
+                chatWindowArray:[
+
+                ],
+                inputText:'',
+                hold:''
+
+            }
+        },
+        methods: {
+            populateChatWindow(index){ // call this when done...
+                this.activate(index.otherPerson);
+
+                this.chatWindowArray.splice(0); // clears out array from previous....
+
+                index.chat.forEach(msg=>{
+                    this.chatWindowArray.push({to:msg.to, from:msg.from, timestamp:msg.timestamp, msg:msg.msg});
+                })
+
+            },
+            appendTextToChat(){
+                console.log(this.inputText);
+
+                // this.chatWindowArray.push({to:'Test', from:'test', timestamp:'none', msg:this.inputText});
+
+                this.chat.forEach(chat_session=>{
+                    if(chat_session.otherPerson === this.hold){ // if chat compared is the one currently selected on the page...
+                        console.log('here')
+                        chat_session.chat.push({to:'Test', from:'test', timestamp:moment().format('LT'), msg:this.inputText})
+                        this.populateChatWindow(chat_session);
+                        // chat_session.chat.push()
+                    }
+                })
+
+
+
+
+
+            },
+            activate(name) {
+                this.hold = name;
+            },
+        },
+        computed:{
+
+        },
+        mounted(){
+
+        }
+    })
+
+
+    let app = new Vue({
+        el: '#vueApp',
+        data(){
+            return {
+                starting_pages:
+                    {
+                        state:false,
+                        sub_state:{
+                            sign_in:false,
+                            sign_up:false,
+                            forgot:false,
+                        }
+                    },
+                profile_pages:
+                    {
+                        state:true,
+                        sub_state:{
+                            chat:false,
+                            profile:true,
+                            home:false,
+                            discovery:false,
+                        }
+                    }
+
+            }
+        },
+        methods:{
+
+        },
+        mounted(){
+            this.$root.$on('signup_page',()=>{ // show sign_up
+
+                this.starting_pages.state = true; // starting pages state
+
+                this.starting_pages.sub_state.sign_in = false; // sign in
+                this.starting_pages.sub_state.sign_up = true; // sign up
+                this.starting_pages.sub_state.forgot = false; // forgot
+
+                this.profile_pages.state = false; // profile pages state
+
+                this.profile_pages.sub_state.chat = false; // chat
+                this.profile_pages.sub_state.profile = false; // profile
+                this.profile_pages.sub_state.home = false; // home
+                this.profile_pages.sub_state.discovery = false; // discovery
+
+            })
+            this.$root.$on('signin_page',()=>{ // show sign in
+
+                this.starting_pages.state = true; // starting pages state
+
+                this.starting_pages.sub_state.sign_in = true; // sign in
+                this.starting_pages.sub_state.sign_up = false; // sign up
+                this.starting_pages.sub_state.forgot = false; // forgot
+
+                this.profile_pages.state = false; // profile pages state
+
+                this.profile_pages.sub_state.chat = false; // chat
+                this.profile_pages.sub_state.profile = false; // profile
+                this.profile_pages.sub_state.home = false; // home
+                this.profile_pages.sub_state.discovery = false; // discovery
+
+            })
+            this.$root.$on('forgot',()=>{
+
+                this.starting_pages.state = true; // starting pages state
+
+                this.starting_pages.sub_state.sign_in = false; // sign in
+                this.starting_pages.sub_state.sign_up = false; // sign up
+                this.starting_pages.sub_state.forgot = true; // forgot
+
+                this.profile_pages.state = false; // profile pages state
+
+                this.profile_pages.sub_state.chat = false; // chat
+                this.profile_pages.sub_state.profile = false; // profile
+                this.profile_pages.sub_state.home = false; // home
+                this.profile_pages.sub_state.discovery = false; // discovery
+
+            })
+            this.$root.$on('go_to_page',(page)=>{
+
+                try{
+                    switch (page) {
+                        case 'Chat':
+
+                            this.starting_pages.state = false; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = false; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = true; // profile pages state
+
+                            this.profile_pages.sub_state.chat = true; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+
+
+                            break;
+                        case 'Home':
+                            break;
+                        case 'Profile':
+                            this.starting_pages.state = false; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = false; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = true; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = true; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+                            break;
+                        case 'Discovery':
+                            // this.sign_in = false // sign in
+                            // this.sign_up = false // sign up
+                            // this.forgot = false // forgot username/password
+                            // this.starting_con = false // all log pages
+                            // this.profile_pages = true // all profile pages
+                            break;
+                        case 'Sign Out':
+
+
+                            this.starting_pages.state = true; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = true; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = false; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+
+
+
+                            localStorage.clear();
+                            break;
+
+                    }
+                }catch (e) {
+                    console.log(e.message)
+                }
+
+            })
+
+            this.$root.$on('sign_in_to_profile',()=>{ // opens to profile page...
+
+                this.starting_pages.state = false; // starting pages state
+
+                this.starting_pages.sub_state.sign_in = false; // sign in
+                this.starting_pages.sub_state.sign_up = false; // sign up
+                this.starting_pages.sub_state.forgot = false; // forgot
+
+                this.profile_pages.state = true; // profile pages state
+
+                this.profile_pages.sub_state.chat = false; // chat
+                this.profile_pages.sub_state.profile = true; // profile
+                this.profile_pages.sub_state.home = false; // home
+                this.profile_pages.sub_state.discovery = false; // discovery
+
+
+
+            })
+            this.$root.$on('upload',()=>{ // upload start
+
+                document.getElementById('photo_upload').click();
+
+
+
+            })
+
+        }
+    })
+
+    webSocket.on('html', function(data) {
+        try {
+            msg = JSON.parse(data);
+
+            switch (msg.type) {
+                case 'populate_profile':
+
+                    app.$root.$emit('populate_profile', msg.data); // populates profile.....
+
+                    app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                    break;
+                default:
+                    break;
+            }
+        } catch (ex) {
+        }
+    })
+    webSocket.on('alert', function(data) {
+        try {
+           alert(data);
+        } catch (ex) {
+        }
+    })
+
+
+
+
+
+</script>
+<script src="/modules/fastClick.js"></script>
+
+<script>
+    let controller;
+
+    function uploadFile() {
+
+        if (event.target.files[0] !== undefined) {
+
+            if (diagnostic) {console.log(`File found...`)}
+
+            let file = event.target.files[0];
+
+            let name = file.name;
+            let fileReader = new FileReader();
+
+            if (diagnostic) {console.log({file: file, name: name})}
+
+            fileReader.onload = (event) => {
+
+                if (diagnostic) {console.log(fileReader)}
+
+                let data = event.target.result;
+
+                let byteArray = new Uint8Array(data);
+
+                if(diagnostic){
+                    console.log(data);
+                    console.log(byteArray);
+                }
+
+                let form = new FormData();
+                form.set('file', file);
+
+                console.log(file);
+
+                // controller = new AbortController();
+
+                axios.post(`./public/profile_photos`, form, {
+                    // signal: controller.signal,
+
+                    onUploadProgress: progressEvent => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+                        console.log(percentCompleted)
+
+                        // if(percentCompleted){}
+                    }
+                })
+                    .then(res => {
+                        if(diagnostic){console.log(res.data)}
+
+                        if(res.data === 'OK'){
+
+                            console.log('fully done.');
+
+                            webSocket.emit('js',JSON.stringify({type:'getPhotoName'}));
+
+
+                        }
+
+                        webSocket.on('photoRes',(name)=>{
+                            console.log(name);
+                            app.$root.$emit('upload_complete', (name));
+
+
+                        })
+
+
+                    })
+            };
+            fileReader.readAsArrayBuffer(file)
+            $("#photo_upload")[0].value = '';
+        }else{
+            console.log(`file undefined`);
+        }
+    }
+</script>
+
+<script>
+    try{
+        let past_user = localStorage.getItem('user');
+        if(past_user !== null){
+            console.log(past_user);
+            past_user = JSON.parse(past_user);
+
+            console.log(past_user);
+
+            app.$root.$emit('populate_profile', past_user); // populates profile.....
+
+            app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+        }
+
+    }catch (e) {
+
+    }
+</script>
+
+</body>
+</html>
