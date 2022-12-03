@@ -889,7 +889,6 @@
             <transition name = fade><main_profile class = main_profile v-show="profile_pages.sub_state.profile"></main_profile></transition>
             <transition name = fade><chat class = chat v-if="profile_pages.sub_state.chat"></chat></transition>
             <transition name = fade><discovery class = discovery v-if="profile_pages.sub_state.discovery"></discovery></transition>
-<!--            <transition name = fade><other_profile class = other_profile v-show="profile_pages.sub_state.other_profile"></other_profile></transition>-->
             <nav_vue class = login_nav></nav_vue>
         </div>
     </transition>
@@ -957,10 +956,10 @@
                 <div>
                 <div class = box>
                   <div class = input_con>
-                    <input type="text" class="text" id="username" placeholder="Username" v-model="username">
-                    <input type="password" class = "text" id="password" placeholder="Password" v-model="password" >
+                    <input type="text" class="itext" id="username" placeholder="Username" v-model="username">
+                    <input type="password" class = "itext" id="password" placeholder="Password" v-model="password" >
                   </div>
-                  <button class = si_btn @click="signIn(this.username, this.password)">Sign In</button>
+                  <button class = si_btn @click="signIn(username, password)">Sign In</button>
                   <div class = link @click="signUp()">Don't have an account? Sign up</div>
                   <div class = link2 @click="forgot()">Forgot Password?</div>
                 </div>
@@ -977,50 +976,82 @@
         },
         methods: {
             signUp(){
-                // app.$root.$emit('signup_page');
-
                 app.$root.$emit('go_to_page',('sign_up'));
-
             },
             forgot(){
-                // app.$root.$emit('forgot');
-                // app.$root.$emit('go_to_page',('forgot'));
+                app.$root.$emit('go_to_page',('forgot'));
             },
-            signIn(user,pass){
+            signIn(userN,pass){
+                let user = {};
 
-                let usrData = {username:user, password:pass};
+                let usrData = {username:userN, password:pass};
 
 
-                axios.post('http://10.211.55.6:8080/loginjs/', usrData)
+                axios.post('http://198.74.61.26:8080/loginjs/', usrData)
                     .then((response) => {
-                        if (response.status === 202 ) { // if accepted...
+                        if (response.status === 202 ) { // if login is accepted....
 
                             if(diagnostic){console.log(response);}
 
+                            user['token'] = response.data.token;
 
-                            app.$root.$emit('populate_profile', past_user); // populates profile..... // one of these should be made for each page to be populated....
+                            if(diagnostic){console.log(response);}
 
-                            app.$root.$emit('go_to_page',('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+                            console.log(response.data.token);
 
+
+                            let config = {
+                                method: 'get',
+                                url: 'http://198.74.61.26:8080/profile/read/',
+                                headers: {
+                                    'Authorization': `Token ${response.data.token}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            };
+
+                            axios(config)
+                                .then(function (response) {
+
+                                   console.log(response)
+
+                                    user['email'] = userN;
+                                    user['fname'] = response.data.first_name;
+                                    user['lname'] = response.data.first_name;
+                                    user['password'] = pass;
+                                    user['rePass'] = pass;
+                                    user['uni'] = response.data.university;
+                                    user['major'] = response.data.major;
+                                    user['hob'] = [];
+                                    user['cls'] = response.data.class_standing;
+                                    user['desc'] = response.data.about_me;
+                                    user['job'] = response.data.job;
+                                    user['on_campus'] = response.data.on_campus;
+                                    user['classes'] = [];
+                                    user['photoPath'] = response.data.avatar;
+
+
+
+                                    localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+
+                                    console.log('done'); // finished...
+
+                                    app.$root.$emit('populate_profile', user); // populates profile..... // one of these should be made for each page to be populated....
+
+                                    app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
 
 
                         } else {
-                            alert('Invalid username or password!')
+                            // alert('Account creation unsuccessful!');
                         }
                     })
                     .catch(error => {
-                        alert('Invalid username or password!')
-                        console.log(error.response);
-                    });
-
-
-
-
-
-
-
-                // webSocket.emit('js', JSON.stringify({type:'authCheck', data:{username:this.username, password:this.password}}))
-                // app.$root.$emit('sign_in_to_profile'); // event
+                        console.log(error);
+                    })
             }
 
         },
@@ -1168,6 +1199,7 @@
             // },
             create_user(user){
                 if(diagnostic){console.log('check 1');}
+                if(diagnostic){console.log(user);}
 
                 let userData = { // make user object and get the token for the user.
                     username:user.email,
@@ -1197,7 +1229,9 @@
                                 // "interests": "",
                                 "job": user.job,
                                 "on_campus": user.on_campus,
-                                "university": user.uni
+                                "university": user.uni,
+                                "avatar": user.photoPath,
+                                "major": user.major
                             });
 
                             let config = {
@@ -1537,6 +1571,8 @@
             })
             this.$root.$on('populate_profile', (data)=>{
 
+                console.log(data)
+
                 localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
 
                 this.profile.splice(0);
@@ -1805,135 +1841,6 @@
 
         }
     })
-
-    // Vue.component('other_profile', {
-    //     template:
-    //             `
-    //               <div>
-    //               <div class=profileTopBoarder v-for="index in this.profile">
-    //                 <div class=pPhoto>
-    //                   <img :src='index.IMG'>
-    //                 </div>
-    //                 <div class = extras>
-    //                   <ul v-for="extra in index.extras">
-    //                     <li class="desc"><img :src= 'extra.img' class = imgClass >{{ extra.item }}</li>
-    //                   </ul>
-    //                 </div>
-    //                 <div class = pTitle>
-    //                   <div class = username>{{ index.username }}</div>
-    //                   <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
-    //                   <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
-    //                   <div class=divRow>
-    //                     <div class=divCol>
-    //                       <div class=sub_contain>
-    //                         <div class = subTitle>Here For...</div>
-    //                         <div class=desc>{{ index.desc }}</div>
-    //                       </div>
-    //                       <div class=sub_contain>
-    //                         <div class = subTitle>Hobbies & Interests</div>
-    //                         <ul v-for="hob in index.hobs">
-    //                           <li class="desc">{{ hob }}</li>
-    //                         </ul>
-    //                       </div>
-    //                     </div>
-    //                     <div class=divCol>
-    //                       <div class = subTitle>Mutual Connections</div>
-    //                       <div class=mutualConProfilePhotosBox>
-    //                         <div class=pPhoto_small>
-    //                           <div style="font-family: 'normal_def';">No Friends</div>
-    //                         </div>
-    //                       </div>
-    //
-    //                     </div>
-    //                   </div>
-    //                   <div class=greySubBackground>
-    //                     <div class=white_container>
-    //                       <div class="table_div2">
-    //                         <div class="column_div2" v-for="item in index.classes">
-    //                           <div class = schd_box>
-    //                             <table>
-    //                               <tr>
-    //                                 <th>Class</th>
-    //                                 <th>Start Time</th>
-    //                                 <th>End Time</th>
-    //                                 <th>Building</th>
-    //                               </tr>
-    //                               <tr>
-    //                                 <td>{{item.class}}</td>
-    //                                 <td>{{item.startTime}}</td>
-    //                                 <td>{{item.endTime}}</td>
-    //                                 <td>{{item.building}}</td>
-    //                               </tr>
-    //                             </table>
-    //                           </div>
-    //                         </div>
-    //                       </div>
-    //                     </div>
-    //                   </div>
-    //                 </div>
-    //               </div>
-    //               </div>
-    //
-    //             `,
-    //     data(){
-    //         return {
-    //             profile:[]
-    //
-    //         }
-    //     },
-    //     methods: {
-    //         signUp(){
-    //             app.$root.$emit('signup_page');
-    //         },
-    //         signIn(){
-    //             app.$root.$emit('signin_page');
-    //         }
-    //     },
-    //     computed:{
-    //
-    //     },
-    //     mounted(){
-    //
-    //         this.$root.$on('populate_profile', (data)=>{
-    //
-    //             localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
-    //
-    //             this.profile.splice(0);
-    //
-    //             console.log(data);
-    //
-    //             let newObj = {
-    //                 username:`${data.fname} ${data.lname}`,
-    //                 on_campus: data.on_campus,
-    //                 IMG:data.photoPath,
-    //                 school:data.uni,
-    //                 job:data.job,
-    //                 degree:data.major,
-    //                 extras:[
-    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
-    //                     {item:`${data.major}`, img:'./photos/net.png'},
-    //                 ],
-    //                 hobs:[
-    //                     data.hob1,
-    //                     data.hob2,
-    //                     data.hob3
-    //                 ],
-    //                 desc:data.desc,
-    //                 classes:[
-    //                     {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
-    //                     {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
-    //                     {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
-    //                     {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
-    //                 ]
-    //
-    //
-    //             }
-    //
-    //             this.profile = [newObj];
-    //         })
-    //
-    //     }
-    // })
 
     let app = new Vue({
         el: '#vueApp',
