@@ -560,33 +560,66 @@
 
         }
 
+        /*.input_bar{*/
+        /*    position: absolute;*/
+        /*    bottom: 25px;*/
+        /*    height: 60px;*/
+        /*    width: 97%;*/
+        /*    left: 50%;*/
+        /*    transform: translate(-50%,0);*/
+        /*    background-color: #e0e0e2;*/
+        /*    border-bottom-right-radius: 20px;*/
+        /*    border-bottom-left-radius: 20px;*/
+        /*}*/
+
         .input_bar{
             position: absolute;
-            bottom: 25px;
-            height: 60px;
-            width: 97%;
-            left: 50%;
-            transform: translate(-50%,0);
+        /* bottom: 25px; */
+            bottom: 5px;
+            height: 55px;
+            width: 100%;
+        /* left: 50%; */
+        /* transform: translate(-50%,0); */
             background-color: #e0e0e2;
-            border-bottom-right-radius: 20px;
-            border-bottom-left-radius: 20px;
+            /*border-bottom-right-radius: 20px;*/
+            /*border-bottom-left-radius: 20px;*/
+        }
+        div {
+            display: block;
         }
 
+        /*.send_btn{*/
+        /*    position: relative;*/
+        /*    display: inline-block;*/
+        /*    width: 100px;*/
+        /*    height: 45px;*/
+        /*    line-height: 45px;*/
+        /*    background-color: grey;*/
+        /*    text-align: center;*/
+        /*    font-family: 'normal_def';*/
+        /*    font-size: 20px;*/
+        /*    border-radius: 20px;*/
+        /*    color: white;*/
+        /*    top: 50%;*/
+        /*    transform: translate(0,-50%);*/
+        /*    left: 2%;*/
+        /*}*/
+
         .send_btn{
-            position: relative;
-            display: inline-block;
-            width: 100px;
-            height: 45px;
-            line-height: 45px;
+            position: absolute;
+            /* display: inline-block; */
+            width: 80%;
+            height: 35px;
+            line-height: 35px;
             background-color: grey;
             text-align: center;
             font-family: 'normal_def';
             font-size: 20px;
-            border-radius: 20px;
+            border-radius: 60px;
             color: white;
             top: 50%;
-            transform: translate(0,-50%);
-            left: 2%;
+            transform: translate(-50%,-50%);
+            left: 50%;
         }
 
         .send_btn:hover{
@@ -601,20 +634,35 @@
             color: white;
         }
 
+        /*.userIn{*/
+        /*    position: relative;*/
+        /*    left: 1%;*/
+        /*    top: 50%;*/
+        /*    transform: translate(0,-50%);*/
+        /*    width: 88%;*/
+        /*    height: 35px;*/
+        /*    border-radius: 20px;*/
+        /*    border: none;*/
+        /*    font-family: 'normal_def';*/
+        /*    font-size: 20px;*/
+        /*    padding: 8px;*/
+        /*    color: #2a2828;*/
+
+        /*}*/
+
         .userIn{
-            position: relative;
-            left: 1%;
+            position: absolute;
+            left: 50%;
             top: 50%;
-            transform: translate(0,-50%);
-            width: 88%;
-            height: 35px;
-            border-radius: 20px;
+            transform: translate(-50%,-50%);
+            width: 95%;
+            height: auto;
+            border-radius: 60px;
             border: none;
             font-family: 'normal_def';
             font-size: 20px;
-            padding: 8px;
+            /* padding: 8px; */
             color: #2a2828;
-
         }
 
         .time_stamp{
@@ -828,6 +876,23 @@
 
         li{
 
+        }
+
+        .table_div_chat{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: none;
+            left: 50%;
+            transform: translate(-50%,0);
+            /*border: solid white;*/
+        }
+
+        .column_div_chat{
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
         }
 
 
@@ -1627,17 +1692,27 @@
                       <div class = bubble_window>
                         <div class = msg v-for="thing in this.chatWindowArray">{{thing.msg}}
                           <div class = time_stamp>{{thing.timestamp}}</div>
+
+                        </div>
+                        <div class = input_bar>
+                          <div class = table_div_chat>
+
+                            <div class = column_div_chat style="width: 90%;">
+                              <input type="text" class = userIn v-model="inputText">
+                            </div>
+
+                            <div class = column_div_chat style="width: 8%;">
+                              <div class = send_btn @click="appendTextToChat()">Send</div>
+                            </div>
+
                         </div>
                       </div>
-                        <div class = input_bar>
-                          <input type="text" class = userIn v-model="inputText">
-                          <div class = send_btn @click="appendTextToChat()">Send</div>
-                        </div>
                     </div>
                     </div>
 
                   </div>
                 </div>
+              </div>
               </div>
 
             `,
@@ -1848,18 +1923,18 @@
             return {
                 starting_pages:
                     {
-                        state:true,
+                        state:false,
                         sub_state:{
-                            sign_in:true,
+                            sign_in:false,
                             sign_up:false,
                             forgot:false,
                         }
                     },
                 profile_pages:
                     {
-                        state:false,
+                        state:true,
                         sub_state:{
-                            chat:false,
+                            chat:true,
                             profile:false,
                             discovery:false,
                             other_profile:false
