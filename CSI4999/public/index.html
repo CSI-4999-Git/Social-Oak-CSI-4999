@@ -902,7 +902,8 @@
 
     let webSocket                                      = io.connect(location.host);
     let msg
-    let diagnostic                                     = false;
+    let diagnostic                                     = true;
+    let current_user;
 
 
     webSocket.on('connect', ()=>{
@@ -915,7 +916,7 @@
               <div>
                 <nav v-for="index in this.nav" class = nav_bar>
                   <ul>
-                    <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item}}</li>
+                    <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item.name}}</li>
                   </ul>
                   <img src="photos/acorn2.png" class = iconz>
                 </nav>
@@ -926,11 +927,11 @@
             return {
                 nav:[
                     [
-                        // 'Home',
-                        'Sign Out',
-                        'Profile',
-                        'Discovery',
-                        'Chat',
+
+                        {name:'Sign Out', val:'sign_out'},
+                        {name:'Profile', val:'Profile'},
+                        {name:'Discovery', val:'discovery'},
+                        {name:'Chat', val:'chat'},
 
                     ]
                 ]
@@ -939,7 +940,7 @@
         },
         methods: {
             goToPage(page){
-                app.$root.$emit('go_to_page', page); //changes the page to the one the user clicks....
+                app.$root.$emit('go_to_page', page.val); //changes the page to the one the user clicks....
             }
         },
         computed:{
@@ -959,7 +960,7 @@
                     <input type="text" class="text" id="username" placeholder="Username" v-model="username">
                     <input type="password" class = "text" id="password" placeholder="Password" v-model="password" >
                   </div>
-                  <button class = si_btn @click="signIn()">Sign In</button>
+                  <button class = si_btn @click="signIn(this.username, this.password)">Sign In</button>
                   <div class = link @click="signUp()">Don't have an account? Sign up</div>
                   <div class = link2 @click="forgot()">Forgot Password?</div>
                 </div>
@@ -976,15 +977,49 @@
         },
         methods: {
             signUp(){
-                app.$root.$emit('signup_page');
+                // app.$root.$emit('signup_page');
+
+                app.$root.$emit('go_to_page',('sign_up'));
+
             },
             forgot(){
-                app.$root.$emit('forgot');
+                // app.$root.$emit('forgot');
+                // app.$root.$emit('go_to_page',('forgot'));
             },
-            signIn(){
-                webSocket.emit('js', JSON.stringify({type:'authCheck', data:{username:this.username, password:this.password}}))
+            signIn(user,pass){
+
+                let usrData = {username:user, password:pass};
 
 
+                axios.post('http://10.211.55.6:8080/loginjs/', usrData)
+                    .then((response) => {
+                        if (response.status === 202 ) { // if accepted...
+
+                            if(diagnostic){console.log(response);}
+
+
+                            app.$root.$emit('populate_profile', past_user); // populates profile..... // one of these should be made for each page to be populated....
+
+                            app.$root.$emit('go_to_page',('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+
+
+                        } else {
+                            alert('Invalid username or password!')
+                        }
+                    })
+                    .catch(error => {
+                        alert('Invalid username or password!')
+                        console.log(error.response);
+                    });
+
+
+
+
+
+
+
+                // webSocket.emit('js', JSON.stringify({type:'authCheck', data:{username:this.username, password:this.password}}))
                 // app.$root.$emit('sign_in_to_profile'); // event
             }
 
@@ -1028,9 +1063,9 @@
                     <input type="file" class=photo_upload id="photo_upload" style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg">
                   </div>
                 </div>
-                <button class=si_btn @click="createUserWIP()" v-show="su">Sign Up</button>
+                <button class=si_btn @click="create_user(forSql)" v-show="su">Sign Up</button>
                 <button class=si_btn v-show="!su" style="background-color:rgba(191,194,206,0.53)">Sign Up</button>
-                <div class=link @click="signIn()">Go Back</div>
+                <div class=link @click="back_to_sign_in()">Go Back</div>
               </div>
               </div>
 
@@ -1041,58 +1076,24 @@
                     email:'',
                     fname:'',
                     lname:'',
-                    // password:'',
-                    // rePass:'',
+                    password:'',
+                    rePass:'',
                     uni:'',
                     major:'',
                     hob:[],
                     cls:'',
                     desc:'',
                     job:'',
-                    // extra1:'',
-                    // extra2:'',
-                    // extra3:'',
                     on_campus:false,
-
-                    // hob1:'',
-                    // hob2:'',
-                    // hob3:'',
-                    // class1_name:'',
-                    // class1_start:'',
-                    // class1_end:'',
-                    // class1_build:'',
-                    // class2_name:'',
-                    // class2_start:'',
-                    // class2_end:'',
-                    // class2_build:'',
-                    // class3_name:'',
-                    // class3_start:'',
-                    // class3_end:'',
-                    // class3_build:'',
-                    // class4_name:'',
-                    // class4_start:'',
-                    // class4_end:'',
-                    // class4_build:'',
                     classes:[]
-
                 },
                 forSql:{},
                 su:false
             }
         },
         methods: {
-            signUp(index){
-
-                console.log(index)
-
-                // webSocket.emit('js', JSON.stringify({type:'create_user', data:{}}))
-
-
-
-                // app.$root.$emit('signup_page');
-            },
-            signIn(){
-                app.$root.$emit('signin_page');
+            back_to_sign_in(){
+                app.$root.$emit('go_to_page',('sign_in'));
             },
             // createUser(){
             //
@@ -1130,37 +1131,113 @@
             //
             //     // webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql}));
             // },
-            createUserWIP(){
+            // createUserWIP(){
+            //
+            //
+            //
+            //
+            //
+            //     let inComplete = false;
+            //
+            //     // for (const prop in this.forSql){ // lazy forum check...
+            //     //     console.log(this.forSql[prop])
+            //     //     if(this.forSql[prop] === ''){
+            //     //         inComplete = true;
+            //     //     }else{
+            //     //         // do nothing....
+            //     //     }
+            //     // }
+            //
+            //     if(inComplete === true){ // if forum is not complete....
+            //         alert('Forum is not complete, please make sure that all fields are filled in to continue');
+            //     }else{
+            //         webSocket.emit('js', JSON.stringify({type:'check_username_if_exists_already', data:this.forSql}));
+            //     }
+            //
+            //     webSocket.on('passed_already_exists_check',()=>{
+            //         webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql})); // last thing to do....
+            //     }) // does not already exist....
+            //
+            //     webSocket.on('fully_done', ()=>{
+            //         app.$root.$emit('populate_profile_first_time', this.forSql); // populates the profile page....
+            //
+            //         console.log(`user created!`);
+            //
+            //         app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+            //     }) // photo fully uploaded....
+            // },
+            create_user(user){
+                if(diagnostic){console.log('check 1');}
 
-                let inComplete = false;
-
-                // for (const prop in this.forSql){ // lazy forum check...
-                //     console.log(this.forSql[prop])
-                //     if(this.forSql[prop] === ''){
-                //         inComplete = true;
-                //     }else{
-                //         // do nothing....
-                //     }
-                // }
-
-                if(inComplete === true){ // if forum is not complete....
-                    alert('Forum is not complete, please make sure that all fields are filled in to continue');
-                }else{
-                    webSocket.emit('js', JSON.stringify({type:'check_username_if_exists_already', data:this.forSql}));
+                let userData = { // make user object and get the token for the user.
+                    username:user.email,
+                    password:user.password,
+                    password2:user.rePass,
+                    first_name:user.fname,
+                    last_name:user.lname,
+                    email:user.email
                 }
+                if(diagnostic){console.log('check 2');}
+                axios.post('http://198.74.61.26:8080/register2/', userData)
+                    .then((response) => {
+                        console.log(response);
+                        if (response.status === 200 ) {
 
-                webSocket.on('passed_already_exists_check',()=>{
-                    webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql})); // last thing to do....
-                }) // does not already exist....
+                            user['token'] = response.data.token;
 
-                webSocket.on('fully_done', ()=>{
-                    app.$root.$emit('populate_profile_first_time', this.forSql); // populates the profile page....
+                            if(diagnostic){console.log(response);}
 
-                    console.log(`user created!`);
+                            console.log(response.data.token);
 
-                    app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
-                }) // photo fully uploaded....
-            }
+                            let data = JSON.stringify({
+                                "about_me": user.desc,
+                                "class_standing": user.cls,
+                                "first_name": user.fname,
+                                "last_name": user.lname,
+                                // "interests": "",
+                                "job": user.job,
+                                "on_campus": user.on_campus,
+                                "university": user.uni
+                            });
+
+                            let config = {
+                                method: 'patch',
+                                url: 'http://198.74.61.26:8080/profile/update/',
+                                headers: {
+                                    'Authorization': `Token ${response.data.token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                data : data
+                            };
+
+                            axios(config)
+                                .then(function (response) {
+
+                                    console.log(JSON.stringify(response.data));
+
+                                    localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+
+                                    console.log('done'); // finished...
+
+                                    app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
+
+                                    app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
+
+                        } else {
+                            // alert('Account creation unsuccessful!');
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                    });
+
+            },
 
         },
         computed:{
@@ -1178,6 +1255,8 @@
                 this.forSql['photoPath'] = `./profile_photos/${path}`;
 
                 console.log(this.forSql);
+
+                app.$root.$emit('enable_signup', true);
 
 
             })
@@ -1216,10 +1295,12 @@
         },
         methods: {
             signUp(){
-                app.$root.$emit('signup_page');
+                // app.$root.$emit('signup_page');
+                app.$root.$emit('go_to_page',('sign_up'));
             },
             signIn(){
-                app.$root.$emit('signin_page');
+                // app.$root.$emit('signin_page');
+                app.$root.$emit('go_to_page',('sign_in'));
             }
         },
         computed:{
@@ -1366,10 +1447,12 @@
         },
         methods: {
             signUp(){
-                app.$root.$emit('signup_page');
+                // app.$root.$emit('signup_page');
+                app.$root.$emit('go_to_page',('sign_up'));
             },
             signIn(){
-                app.$root.$emit('signin_page');
+                // app.$root.$emit('signin_page');
+                app.$root.$emit('go_to_page',('sign_in'));
             },
             open_popup(pop){
                 try{
@@ -1391,27 +1474,19 @@
 
             },
             add_hobbie(hobby){
-                console.log(hobby);
+                if(diagnostic){console.log(hobby)}
                 app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
                 // updateDb();
             },
             add_class(newClass){
-                console.log(newClass);
-
-                // {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
-
-                // <td>{{ item.class }}</td>
-                // <td>{{ item.startTime }}</td>
-                // <td>{{ item.startTime }}</td>
-                // <td>{{ item.endTime }}</td>
-                // <td>{{ item.building }}</td>
+                if(diagnostic){console.log(newClass)}
 
                 let classObj = {
                     class:newClass.classname,
                     startTime:newClass.start_time,
                     endTime:newClass.end_time,
                     building:newClass.building,
-                }
+                };
 
                 let dowArray = [];
 
@@ -1423,16 +1498,7 @@
 
                 classObj['dow'] = dowArray;
 
-                console.log(classObj);
-
-
-                // newClass.days_of_week.forEach(day=>{
-                //     if(day){
-                //
-                //     }
-                // })
-
-
+               if(diagnostic){console.log(classObj)}
 
                 app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
                 // updateDb();
@@ -1449,7 +1515,7 @@
 
                 this.profile.splice(0);
 
-                console.log(data);
+                if(diagnostic) {console.log(data)}
 
                 let newObj = {
                     username:`${data.fname} ${data.lname}`,
@@ -1475,7 +1541,7 @@
 
                 this.profile.splice(0);
 
-                console.log(data);
+                if(diagnostic){console.log(data)}
 
                 let newObj = {
                     username:`${data.fname} ${data.lname}`,
@@ -1494,17 +1560,14 @@
 
 
                 }
-                //
-                // {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
-                // {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
-                // {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
-                // {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
 
                 this.profile = [newObj];
+
             })
             this.$root.$on('remove_popup', ()=>{
 
                 this.hobbie_popup = false;
+
             })
 
         }
@@ -1642,6 +1705,7 @@
         template:
             `
               <div>
+              <div>Hello world</div>
 
               </div>
 
@@ -1879,8 +1943,8 @@
                     {
                         state:true,
                         sub_state:{
-                            sign_in:false,
-                            sign_up:true,
+                            sign_in:true,
+                            sign_up:false,
                             forgot:false,
                         }
                     },
@@ -1977,59 +2041,89 @@
             }
         },
         mounted(){
-            this.$root.$on('signup_page',()=>{ // show sign_up
-
-                this.starting_pages.state = true; // starting pages state
-
-                this.starting_pages.sub_state.sign_in = false; // sign in
-                this.starting_pages.sub_state.sign_up = true; // sign up
-                this.starting_pages.sub_state.forgot = false; // forgot
-
-                this.profile_pages.state = false; // profile pages state
-
-                this.profile_pages.sub_state.chat = false; // chat
-                this.profile_pages.sub_state.profile = false; // profile
-                this.profile_pages.sub_state.home = false; // home
-                this.profile_pages.sub_state.discovery = false; // discovery
-
-            })
-            this.$root.$on('signin_page',()=>{ // show sign in
-
-                this.starting_pages.state = true; // starting pages state
-
-                this.starting_pages.sub_state.sign_in = true; // sign in
-                this.starting_pages.sub_state.sign_up = false; // sign up
-                this.starting_pages.sub_state.forgot = false; // forgot
-
-                this.profile_pages.state = false; // profile pages state
-
-                this.profile_pages.sub_state.chat = false; // chat
-                this.profile_pages.sub_state.profile = false; // profile
-                this.profile_pages.sub_state.home = false; // home
-                this.profile_pages.sub_state.discovery = false; // discovery
-
-            })
-            this.$root.$on('forgot',()=>{
-
-                this.starting_pages.state = true; // starting pages state
-
-                this.starting_pages.sub_state.sign_in = false; // sign in
-                this.starting_pages.sub_state.sign_up = false; // sign up
-                this.starting_pages.sub_state.forgot = true; // forgot
-
-                this.profile_pages.state = false; // profile pages state
-
-                this.profile_pages.sub_state.chat = false; // chat
-                this.profile_pages.sub_state.profile = false; // profile
-                this.profile_pages.sub_state.home = false; // home
-                this.profile_pages.sub_state.discovery = false; // discovery
-
-            })
+            // this.$root.$on('signup_page',()=>{ // show sign_up
+            //
+            //     this.starting_pages.state = true; // starting pages state
+            //
+            //     this.starting_pages.sub_state.sign_in = false; // sign in
+            //     this.starting_pages.sub_state.sign_up = true; // sign up
+            //     this.starting_pages.sub_state.forgot = false; // forgot
+            //
+            //     this.profile_pages.state = false; // profile pages state
+            //
+            //     this.profile_pages.sub_state.chat = false; // chat
+            //     this.profile_pages.sub_state.profile = false; // profile
+            //     this.profile_pages.sub_state.home = false; // home
+            //     this.profile_pages.sub_state.discovery = false; // discovery
+            //
+            // })
+            // this.$root.$on('signin_page',()=>{ // show sign in
+            //
+            //     this.starting_pages.state = true; // starting pages state
+            //
+            //     this.starting_pages.sub_state.sign_in = true; // sign in
+            //     this.starting_pages.sub_state.sign_up = false; // sign up
+            //     this.starting_pages.sub_state.forgot = false; // forgot
+            //
+            //     this.profile_pages.state = false; // profile pages state
+            //
+            //     this.profile_pages.sub_state.chat = false; // chat
+            //     this.profile_pages.sub_state.profile = false; // profile
+            //     this.profile_pages.sub_state.home = false; // home
+            //     this.profile_pages.sub_state.discovery = false; // discovery
+            //
+            // })
+            // this.$root.$on('forgot',()=>{
+            //
+            //     this.starting_pages.state = true; // starting pages state
+            //
+            //     this.starting_pages.sub_state.sign_in = false; // sign in
+            //     this.starting_pages.sub_state.sign_up = false; // sign up
+            //     this.starting_pages.sub_state.forgot = true; // forgot
+            //
+            //     this.profile_pages.state = false; // profile pages state
+            //
+            //     this.profile_pages.sub_state.chat = false; // chat
+            //     this.profile_pages.sub_state.profile = false; // profile
+            //     this.profile_pages.sub_state.home = false; // home
+            //     this.profile_pages.sub_state.discovery = false; // discovery
+            //
+            // })
             this.$root.$on('go_to_page',(page)=>{
 
                 try{
                     switch (page) {
-                        case 'Chat':
+                        case 'sign_up':
+                            this.starting_pages.state = true; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = false; // sign in
+                            this.starting_pages.sub_state.sign_up = true; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = false; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+
+                            break;
+                        case 'sign_in':
+                            this.starting_pages.state = true; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = true; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = false; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+
+                            break;
+                        case 'chat':
 
                             this.starting_pages.state = false; // starting pages state
 
@@ -2046,7 +2140,7 @@
 
 
                             break;
-                        case 'Home':
+                        case 'home':
                             break;
                         case 'Profile':
                             this.starting_pages.state = false; // starting pages state
@@ -2062,14 +2156,21 @@
                             this.profile_pages.sub_state.home = false; // home
                             this.profile_pages.sub_state.discovery = false; // discovery
                             break;
-                        case 'Discovery':
-                            // this.sign_in = false // sign in
-                            // this.sign_up = false // sign up
-                            // this.forgot = false // forgot username/password
-                            // this.starting_con = false // all log pages
-                            // this.profile_pages = true // all profile pages
+                        case 'discovery':
+                            this.starting_pages.state = false; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = false; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = true; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = true; // discovery
                             break;
-                        case 'Sign Out':
+                        case 'sign_out':
 
 
                             this.starting_pages.state = true; // starting pages state
@@ -2077,6 +2178,26 @@
                             this.starting_pages.sub_state.sign_in = true; // sign in
                             this.starting_pages.sub_state.sign_up = false; // sign up
                             this.starting_pages.sub_state.forgot = false; // forgot
+
+                            this.profile_pages.state = false; // profile pages state
+
+                            this.profile_pages.sub_state.chat = false; // chat
+                            this.profile_pages.sub_state.profile = false; // profile
+                            this.profile_pages.sub_state.home = false; // home
+                            this.profile_pages.sub_state.discovery = false; // discovery
+
+
+
+                            localStorage.clear();
+                            break;
+                        case 'forgot':
+
+
+                            this.starting_pages.state = true; // starting pages state
+
+                            this.starting_pages.sub_state.sign_in = false; // sign in
+                            this.starting_pages.sub_state.sign_up = false; // sign up
+                            this.starting_pages.sub_state.forgot = true; // forgot
 
                             this.profile_pages.state = false; // profile pages state
 
@@ -2097,36 +2218,29 @@
 
             })
 
-            this.$root.$on('sign_in_to_profile',()=>{ // opens to profile page...
-
-                this.starting_pages.state = false; // starting pages state
-
-                this.starting_pages.sub_state.sign_in = false; // sign in
-                this.starting_pages.sub_state.sign_up = false; // sign up
-                this.starting_pages.sub_state.forgot = false; // forgot
-
-                this.profile_pages.state = true; // profile pages state
-
-                this.profile_pages.sub_state.chat = false; // chat
-                this.profile_pages.sub_state.profile = true; // profile
-                this.profile_pages.sub_state.home = false; // home
-                this.profile_pages.sub_state.discovery = false; // discovery
-
-
-
-            })
+            // this.$root.$on('sign_in_to_profile',()=>{ // opens to profile page...
+            //
+            //     this.starting_pages.state = false; // starting pages state
+            //
+            //     this.starting_pages.sub_state.sign_in = false; // sign in
+            //     this.starting_pages.sub_state.sign_up = false; // sign up
+            //     this.starting_pages.sub_state.forgot = false; // forgot
+            //
+            //     this.profile_pages.state = true; // profile pages state
+            //
+            //     this.profile_pages.sub_state.chat = false; // chat
+            //     this.profile_pages.sub_state.profile = true; // profile
+            //     this.profile_pages.sub_state.home = false; // home
+            //     this.profile_pages.sub_state.discovery = false; // discovery
+            //
+            //
+            //
+            // })
             this.$root.$on('upload',()=>{ // upload start
-
                 document.getElementById('photo_upload').click();
-
-
-
             })
             this.$root.$on('update_browser',(page, prop, data)=>{ // upload start
                 this.updateBrowser(page, prop, data);
-
-
-
 
             })
 
@@ -2226,7 +2340,6 @@
                         webSocket.on('photoRes',(name)=>{
                             console.log(name);
                             app.$root.$emit('upload_complete', (name));
-                            app.$root.$emit('enable_signup', true);
 
 
                         })
