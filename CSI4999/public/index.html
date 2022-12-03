@@ -1476,7 +1476,7 @@
             add_hobbie(hobby){
                 if(diagnostic){console.log(hobby)}
                 app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
-                // updateDb();
+                app.$root.$emit('update_db','Profile', 'hob', hobby); // sends to function to update db storage....
             },
             add_class(newClass){
                 if(diagnostic){console.log(newClass)}
@@ -1501,7 +1501,7 @@
                if(diagnostic){console.log(classObj)}
 
                 app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
-                // updateDb();
+                app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
             }
         },
         computed:{
@@ -1511,7 +1511,7 @@
 
             this.$root.$on('populate_profile_first_time', (data)=>{
 
-                localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
+                localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
 
                 this.profile.splice(0);
 
@@ -1537,7 +1537,7 @@
             })
             this.$root.$on('populate_profile', (data)=>{
 
-                localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
+                localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
 
                 this.profile.splice(0);
 
@@ -1968,7 +1968,7 @@
                 try{
                     switch (page) {
                         case 'Profile': // profile page...
-                            let past_user = localStorage.getItem('user'); // grab old user....
+                            let past_user = localStorage.getItem('current_user'); // grab old user....
                             if(past_user !== null){
                                 past_user = JSON.parse(past_user);
                                 console.log(past_user);
@@ -1978,7 +1978,284 @@
 
                                 localStorage.clear();
 
-                                localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
+
+                                app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                app.$root.$emit('remove_popup'); // removes the popup...
+
+
+                                // try{
+                                //     switch (prop) {
+                                //         case 'hob':
+                                //             past_user[prop].push(data); // change data
+                                //             // past_user[prop] = [] // change data
+                                //
+                                //             localStorage.clear();
+                                //
+                                //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                //
+                                //             // location.reload();
+                                //
+                                //
+                                //
+                                //             app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                //             app.$root.$emit('remove_popup'); // removes the popup...
+                                //             break;
+                                //         case 'classes':
+                                //             past_user.classes.push()
+                                //             break;
+                                //         default:
+                                //             break;
+                                //
+                                //     }
+                                // }catch (e) {
+                                //     console.log(e.message)
+                                // }
+
+                                // past_user[prop].push(data); // change data
+                                // // past_user[prop] = [] // change data
+                                //
+                                // localStorage.clear();
+                                //
+                                // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                //
+                                // // location.reload();
+                                //
+                                //
+                                //
+                                // app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                // app.$root.$emit('remove_popup'); // removes the popup...
+
+                                // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                            }
+                            break;
+                        case 'Chat': // chat page...
+                            break;
+                        default:
+                            break;
+
+                    }
+                }catch (e) {
+                    console.log(e.message)
+                }
+            },
+            updateDB(page, prop, info){
+                try{
+                    switch (page) {
+                        case 'Profile': // profile page...
+                            try{
+                                switch (prop) {
+                                    case 'hob': // hobby...
+                                        current_user = localStorage.getItem('current_user'); // grab user....
+                                        if(current_user !== null){
+                                            current_user = JSON.parse(current_user);
+                                            console.log(current_user);
+
+                                            let data = JSON.stringify({
+                                                "interests": info,
+                                            });
+
+                                            let config = {
+                                                method: 'patch',
+                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                headers: {
+                                                    'Authorization': `Token ${current_user.token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data : data
+                                            };
+
+                                            axios(config)
+                                                .then(function (response) {
+
+                                                    console.log(JSON.stringify(response.data));
+
+                                                })
+                                                .catch(function (error) {
+                                                    console.log(error);
+                                                });
+
+
+
+                                            // try{
+                                            //     switch (prop) {
+                                            //         case 'hob':
+                                            //             past_user[prop].push(data); // change data
+                                            //             // past_user[prop] = [] // change data
+                                            //
+                                            //             localStorage.clear();
+                                            //
+                                            //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                            //
+                                            //             // location.reload();
+                                            //
+                                            //
+                                            //
+                                            //             app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                            //             app.$root.$emit('remove_popup'); // removes the popup...
+                                            //             break;
+                                            //         case 'classes':
+                                            //             past_user.classes.push()
+                                            //             break;
+                                            //         default:
+                                            //             break;
+                                            //
+                                            //     }
+                                            // }catch (e) {
+                                            //     console.log(e.message)
+                                            // }
+
+                                            // past_user[prop].push(data); // change data
+                                            // // past_user[prop] = [] // change data
+                                            //
+                                            // localStorage.clear();
+                                            //
+                                            // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                            //
+                                            // // location.reload();
+                                            //
+                                            //
+                                            //
+                                            // app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                            // app.$root.$emit('remove_popup'); // removes the popup...
+
+                                            // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                                        }
+                                        break;
+                                    case 'classes': // classes...
+                                        current_user = localStorage.getItem('current_user'); // grab user....
+                                        if(current_user !== null){
+                                            current_user = JSON.parse(current_user);
+                                            console.log(current_user);
+
+                                            let data = JSON.stringify({
+                                                "interests": info,
+                                            });
+
+                                            let config = {
+                                                method: 'patch',
+                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                headers: {
+                                                    'Authorization': `Token ${current_user.token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data : data
+                                            };
+
+                                            axios(config)
+                                                .then(function (response) {
+
+                                                    console.log(JSON.stringify(response.data));
+
+                                                })
+                                                .catch(function (error) {
+                                                    console.log(error);
+                                                });
+
+
+
+                                            // try{
+                                            //     switch (prop) {
+                                            //         case 'hob':
+                                            //             past_user[prop].push(data); // change data
+                                            //             // past_user[prop] = [] // change data
+                                            //
+                                            //             localStorage.clear();
+                                            //
+                                            //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                            //
+                                            //             // location.reload();
+                                            //
+                                            //
+                                            //
+                                            //             app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                            //             app.$root.$emit('remove_popup'); // removes the popup...
+                                            //             break;
+                                            //         case 'classes':
+                                            //             past_user.classes.push()
+                                            //             break;
+                                            //         default:
+                                            //             break;
+                                            //
+                                            //     }
+                                            // }catch (e) {
+                                            //     console.log(e.message)
+                                            // }
+
+                                            // past_user[prop].push(data); // change data
+                                            // // past_user[prop] = [] // change data
+                                            //
+                                            // localStorage.clear();
+                                            //
+                                            // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                            //
+                                            // // location.reload();
+                                            //
+                                            //
+                                            //
+                                            // app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                            // app.$root.$emit('remove_popup'); // removes the popup...
+
+                                            // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                                        }
+                                        break;
+                                    default:
+                                        break;
+
+                                }
+                            }catch (e) {
+                                console.log(e.message)
+                            }
+
+                            let myUser = localStorage.getItem('current_user'); // grab user....
+                            if(myUser !== null){
+                                myUser = JSON.parse(myUser);
+                                console.log(myUser);
+
+                                let data = JSON.stringify({
+                                    "about_me": user.desc,
+                                    "class_standing": user.cls,
+                                    "first_name": user.fname,
+                                    "last_name": user.lname,
+                                    // "interests": "",
+                                    "job": user.job,
+                                    "on_campus": user.on_campus,
+                                    "university": user.uni
+                                });
+
+                                let config = {
+                                    method: 'patch',
+                                    url: 'http://198.74.61.26:8080/profile/update/',
+                                    headers: {
+                                        'Authorization': `Token ${myUser.token}`,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    data : data
+                                };
+
+                                axios(config)
+                                    .then(function (response) {
+
+                                        console.log(JSON.stringify(response.data));
+
+                                        localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+
+                                        console.log('done'); // finished...
+
+                                        app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
+
+                                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    });
+
+
+
+                                localStorage.clear();
+
+                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
 
                                 app.$root.$emit('populate_profile', past_user); // populates profile.....
                                 app.$root.$emit('remove_popup'); // removes the popup...
@@ -2243,6 +2520,10 @@
                 this.updateBrowser(page, prop, data);
 
             })
+            this.$root.$on('update_db',(page, prop, data)=>{ // upload start
+                this.updateDB(page, prop, data);
+
+            })
 
         }
     })
@@ -2357,7 +2638,7 @@
 
 <script>
     try{
-        let past_user = localStorage.getItem('user');
+        let past_user = localStorage.getItem('current_user');
         if(past_user !== null){
             console.log(past_user);
             past_user = JSON.parse(past_user);
