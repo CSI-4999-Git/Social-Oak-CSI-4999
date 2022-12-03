@@ -47,25 +47,25 @@ let personal_io;
 // );
 
 
-//
-// async function getAllUsers() {
+
+async function getAllUsers() {
+    const client = new Client(credentials);
+    await client.connect();
+    const now = await client.query("SELECT * from users");
+    await client.end();
+
+    return now;
+}
+// async function create_user(email, school, major, class_standing, first_name, last_name, description, photopath, job) {
 //     const client = new Client(credentials);
 //     await client.connect();
-//     const now = await client.query("SELECT * from users");
+//     const now = await client.query("INSERT INTO users (email, school, major, class_standing, first_name, last_name, description, photopath, job) VALUES ()");
 //     await client.end();
 //
 //     return now;
 // }
-// // async function create_user(email, school, major, class_standing, first_name, last_name, description, photopath, job) {
-// //     const client = new Client(credentials);
-// //     await client.connect();
-// //     const now = await client.query("INSERT INTO users (email, school, major, class_standing, first_name, last_name, description, photopath, job) VALUES ()");
-// //     await client.end();
-// //
-// //     return now;
-// // }
 //
-//
+
 // async function create_user(email, school, major, class_standing, first_name, last_name, description, photopath, job) {
 //     const client = new Client(credentials);
 //     await client.connect();
@@ -73,8 +73,8 @@ let personal_io;
 //     // await client.end();
 //
 //
-//     var sql = "INSERT INTO customers (name, address) VALUES";
-//     var values = [
+//     let sql = "INSERT INTO customers (name, address) VALUES";
+//     let values = [
 //         ['John', 'Highway 71'],
 //         ['Peter', 'Lowstreet 4'],
 //         ['Amy', 'Apple st 652'],
@@ -90,27 +90,38 @@ let personal_io;
 //         ['Chuck', 'Main Road 989'],
 //         ['Viola', 'Sideway 1633']
 //     ];
-//     // con.query(sql, [values], function (err, result) {
-//     //     if (err) throw err;
-//     //     console.log("Number of records inserted: " + result.affectedRows);
-//     // });
+//     client.query(sql, [values], function (err, result) {
+//         if (err) throw err;
+//         console.log("Number of records inserted: " + result);
+//     });
 //
 //     const now = await client.query(sql,[values])
 //     await client.end();
 //
 //     return now;
 // }
-//
-//
-//
-//
-// const insertUser = async (userName, userRole) => {
+
+
+const insertUser = async (email, school, major, class_standing, first_name, last_name, description, photopath, job) => {
+    const client = new Client(credentials);
+    try {
+        // const client = new Client(credentials);
+        await client.connect();           // gets connection
+        await client.query(
+            `INSERT INTO "users" ("email", "school", "major","class_standing","first_name","last_name","description","photopath","job")
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [email, school, major, class_standing, first_name, last_name, description, photopath, job]); // sends queries
+        return true;
+    } catch (error) {
+        console.error(error.stack);
+        return false;
+    } finally {
+        await client.end();               // closes connection
+    }
+}; // inserts a user into the user table of the db.....
+// const showAllTables = async () => {
 //     try {
-//         const client = new Client(credentials);
 //         await client.connect();           // gets connection
-//         await client.query(
-//             `INSERT INTO "users" ("email", "school", "major","class_standing","first_name","last_name","description","photopath","job")
-//              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [email, school, major, class_standing, first_name, last_name, description, photopath, job ]); // sends queries
+//         await client.query(`\\dt`); // sends queries
 //         return true;
 //     } catch (error) {
 //         console.error(error.stack);
@@ -118,8 +129,8 @@ let personal_io;
 //     } finally {
 //         await client.end();               // closes connection
 //     }
-// };
-//
+// }; // inserts a user into the user table of the db.....
+
 // async function getAllChats() {
 //     const client = new Client(credentials);
 //     await client.connect();
@@ -128,13 +139,25 @@ let personal_io;
 //
 //     return now;
 // }
-//
+
 // (async () => {
 //
 //
-//     const createUser = await create_user();
-//     console.log(createUser.rows);
+//     const users = await getAllUsers();
+//     console.log(users.rows);
 //     console.log('done');
+//
+//     // const res2 = await insertUser('lenny.test@gmail.com', 'Oakland University','IT','Senior','Lenny', 'Cassen','I am testing an insert statment...', 'photos/nice.gif','IT' );
+//     // console.log(res2.rows);
+//     // console.log('done');
+//
+//     // const users = await getAllUsers();
+//     // console.log(users.rows);
+//     // console.log('done');
+//
+//     // const show_all = await showAllTables();
+//     // console.log(show_all);
+//     // console.log('done');
 //
 //
 //
@@ -302,8 +325,47 @@ server = app.listen(portNum, function () {
                         console.log(e.message);
                     }
                     break;
-                case 'createUser':
+                case 'check_username_if_exists_already':
+                    let exis = false;
 
+                    (async () => {
+
+
+                        const users = await getAllUsers();
+                        console.log(users.rows);
+                        console.log('done');
+
+                        users.rows.forEach(user=>{
+                            if(user.email === msg.data.email){ // if username already exists....
+                                exis = true;
+                            }else{
+                                // do nothing.....
+                            }
+                        })
+
+                        if(exis === true){
+                            io.emit('alert', 'An account with this email already exists, try a different email or Sign In')
+                        }else{
+                            io.emit('passed_already_exists_check')
+                        }
+
+
+
+                    })();
+                    break;
+                case 'createUser':
+                    (async () => {
+
+
+                        let res2 = await insertUser(msg.data.email, msg.data.uni,msg.data.major,msg.data.cls,msg.data.fname, msg.data.lname,msg.data.desc, msg.data.photoPath,msg.data.job);
+                        console.log(res2.rows);
+                        console.log('done');
+                        io.emit('alert', 'Success! User has been created!');
+                        io.emit('fully_done');
+
+
+
+                    })();
                     break;
                 case 'getPhotoName':
                     if(profilePhotoFileName !== undefined){

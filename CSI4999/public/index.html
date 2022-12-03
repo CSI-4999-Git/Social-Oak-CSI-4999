@@ -18,7 +18,10 @@
 <!--    <link rel="apple-touch-icon" href="./photos/logo.png">-->
     <style>
         @font-face {
-            font-family: 'home_font', sans-serif; src: url("./fonts/Poppins-Regular.ttf") format('truetype');
+            font-family: 'normal_def'; src: url("./fonts/Poppins-Regular.ttf") format('truetype');
+        }
+        @font-face {
+            font-family: 'curly'; src: url("./fonts/curly.ttf") format('truetype');
         }
         :root {
             --blockColor  : #f4f4f4;
@@ -39,17 +42,31 @@
 
         /*if vueApp is set to fixed positioning, app will have no overflow! kind of interesting*/
 
+        /*.box{*/
+        /*    position: absolute;*/
+        /*    left: 50%;*/
+        /*    top: 50%;*/
+        /*    transform: translate(-50%,-50%);*/
+
+        /*    height: 400px;*/
+        /*    !*width: 600px;*!*/
+        /*    width: 900px;*/
+        /*    background-color: var(--blockColor);*/
+        /*    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;*/
+
+        /*    border-radius: 10px;*/
+        /*}*/
+
         .box{
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%,-50%);
-
             height: 400px;
-            width: 600px;
-            background-color: var(--blockColor);
-            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-
+        /* width: 600px; */
+            width: 900px;
+            background-color: #3d5479d9;
+            box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;
             border-radius: 10px;
         }
 
@@ -66,16 +83,53 @@
         .text{
             position: relative;
             height: 40px;
-            width: 200px;
+            width: 300px;
             line-height: 50px;
+            left: 50%;
+            transform: translate(-50%,0);
 
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: 1em;
             border-radius: 10px;
             border:none;
             margin-bottom: 25px;
             text-align: center;
 
+            color: white;
+        }
+        .itext{
+            position: relative;
+            height: 40px;
+            width: 300px;
+            line-height: 50px;
+            left: 50%;
+            transform: translate(-50%,0);
+            font-family: 'normal_def';
+            font-size: 1em;
+            border-radius: 10px;
+            border:none;
+            margin-bottom: 25px;
+            text-align: center;
+
+            color: black;
+        }
+        .ptext{
+            position: relative;
+            height: 40px;
+            width: 300px;
+            line-height: 50px;
+            left: 50%;
+            transform: translate(-50%,0);
+            margin-top: 25px;
+
+            font-family: 'normal_def';
+            font-size: 1em;
+            border-radius: 10px;
+            border:none;
+            margin-bottom: 25px;
+            text-align: center;
+
+            color: black;
         }
 
         .si_btn{
@@ -85,7 +139,7 @@
             width: 150px;
             background-color: cornflowerblue;
             color: white;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: 1em;
             border: none;
             border-radius: 50px;
@@ -101,11 +155,12 @@
             position: absolute;
             bottom: 5px;
             left: 5px;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: .8em;
-            color: #858585;
+            /*color: #858585;*/
             cursor: pointer;
             padding: 5px;
+            color: white;
 
         }
 
@@ -113,21 +168,22 @@
             position: absolute;
             bottom: 5px;
             right: 5px;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: .8em;
-            color: #858585;
+            /*color: #858585;*/
             cursor: pointer;
             padding: 5px;
+            color: white;
 
         }
 
         .title{
-            font-family: 'home_font', sans-serif;
+            font-family:'curly';
             font-size: 3em;
             height: 60px;
             line-height: 60px;
             text-align: center;
-            color: #909fc5;
+            color: #ffffff;
             left: 50%;
             transform: translate(-50%);
             top: 140px;
@@ -181,7 +237,7 @@
         .pTitle{
             position: relative;
             top: 400px;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             color: #2a2828;
             font-size: 20px;
             text-align: center;
@@ -200,11 +256,10 @@
         /*scroll source*/
         .greySubBackground{
             position: relative;
-            top: 50px;
+            top:0px;
             height: 500px;
             width: 100%;
             background-color: #f5f5f5;
-            /*overflow: auto;*/
         }
 
 
@@ -231,10 +286,15 @@
             border: black solid;
         }
 
-        tr,td,th,table{
-            border: black solid
+        table{
+         padding: 5px;
+            border: none;
         }
-
+        th,td {
+           width: 20%;
+            text-align: center;
+            height: 60px;
+        }
         .aTitle{
             text-align: left;
         }
@@ -249,6 +309,7 @@
 
         .divCol {
             float: left;
+            display: inline-block;
             width: 50%;
             /*padding: 10px;*/
             /*height: 400px; !* Should be removed. Only for demonstration *!*/
@@ -258,11 +319,12 @@
 
         .divRow{
             position: relative;
-            width: 60%;
+            width: 100%;
             left: 50%;
             transform: translate(-50%,0);
 
             height: 300px;
+            margin-bottom: 100px;
         }
 
 
@@ -286,8 +348,8 @@
             height: 160px;
             width: 100%;
             position: relative;
-            text-align: left;
-            line-height: 23px;
+            text-align: center;
+            line-height: 60px;
         }
 
         ul{
@@ -320,7 +382,7 @@
             transform: translate(-50%, 0);
             left: 50%;
             top: 328px;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
         }
 
 
@@ -330,7 +392,7 @@
             height: 60px;
             background-color: #0c486e;
             color: white;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
 
 
         }
@@ -413,7 +475,7 @@
             transform: translate(0,-50%);
             line-height: 60px;
             text-align: center;
-            font-family: 'home_font', sans-serif ;
+            font-family: 'normal_def' ;
             font-size: 1.1em;
             color: #000000;
 
@@ -489,7 +551,7 @@
             width: 85%;
             transform: translate(-50%,0);
             left: 50%;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             color: #2a2828;
             font-size: 20px;
             /*background-color: cadetblue;*/
@@ -518,7 +580,7 @@
             line-height: 45px;
             background-color: grey;
             text-align: center;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: 20px;
             border-radius: 20px;
             color: white;
@@ -548,7 +610,7 @@
             height: 35px;
             border-radius: 20px;
             border: none;
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             font-size: 20px;
             padding: 8px;
             color: #2a2828;
@@ -562,7 +624,7 @@
             left: -80px;
             top: 0;
             /*background-color: cornflowerblue;*/
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             color: #2a2828;
             font-size: 14px;
             text-align: center;
@@ -593,10 +655,12 @@
         }
 
         .titlePhoto{
-            position:relative;left: 50%; transform: translate(-50%,0); font-family: 'home_font', sans-serif; text-align: center; width: 100%; padding-bottom: 5px;
+            position:relative;left: 50%; transform: translate(-50%,0); font-family: 'normal_def'; text-align: center; width: 100%; padding-bottom: 5px; color: white;
         }
 
         .overflow_con{
+            position: relative;
+            top: 40px;
             height: 72%;
             width: 100%;
             overflow: auto;
@@ -605,7 +669,7 @@
 
 
         table {
-            font-family: 'home_font', sans-serif;
+            font-family: 'normal_def';
             border-collapse: collapse;
             width: 100%;
             border: none;
@@ -630,6 +694,142 @@
             color: white;
         }
 
+        .starting_con{
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-image: url("photos/nice.gif");
+            /*background-image: url("photos/nice.gif");*/
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /*.addBtn{*/
+        /*    position: relative;*/
+        /*    background-color: #1c71aa;*/
+        /*    color: white;*/
+        /*    font-family: normal_def;*/
+        /*    font-size: 1em;*/
+        /*    text-align: center;*/
+        /*    height: auto;*/
+        /*    line-height: 25px;*/
+        /*    width: 75px;*/
+        /*    border-radius: 25px;*/
+        /*    padding:2px;*/
+        /*    margin-top: 5px;*/
+        /*}*/
+
+        .addBtn{
+            position: relative;
+            background-color: #1c71aa;
+            color: white;
+            font-family: normal_def;
+            font-size: 1em;
+            text-align: center;
+            height: auto;
+            line-height: 25px;
+            width: 75px;
+            border-radius: 25px;
+            padding: 2px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            left: 50%;
+            transform: translate(-50%,0);
+
+        }
+
+        .addBtn:hover{
+            cursor: pointer;
+            background-color: #0d5280;
+        }
+
+        .addBtn:active{
+            transform: translate(-50%,2px);
+        }
+
+        .popup{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            height: 450px;
+            padding-bottom: 10px;
+            width: 500px;
+            background-color: #0c486e;
+            border-radius: 15px;
+            /*overflow: auto;*/
+        }
+        /*.hobbiePopup{*/
+        /*    position: absolute;*/
+        /*    left: 50%;*/
+        /*    top: 50%;*/
+        /*    transform: translate(-50%,-50%);*/
+        /*    height: 200px;*/
+        /*    width: 500px;*/
+        /*    background-color: #0c486e;*/
+        /*    border-radius: 25px;*/
+        /*}*/
+
+        .pop_up_text{
+            position: relative;
+            top: 0;
+            height: 80%;
+            width: 100%;
+            /*background-color: yellow;*/
+            /*line-height: 20%;*/
+            font-family: normal_def;
+            /*text-align: left;*/
+            /*padding:10px;*/
+            overflow: auto;
+        }
+
+        .h_box{
+            overflow: auto; position: relative; height: 100px;
+        }
+
+        .checkbox{
+            position: relative;
+            height: 30px;
+            width: 30px;
+
+        }
+
+        .text_con{
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .dofW{
+            position: relative; width: 100%; text-align: center; color: white; font-family: normal_def;
+
+        }
+
+        .close{
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            height: 25px;
+            width: auto;
+            background-color: #5e5e5e;
+            border-radius: 15px;
+            padding: 5px;
+            color: white;
+
+        }
+
+        .close:active{
+            transform: translate(0,2px);
+        }
+
+        .close:hover{
+            cursor: pointer;
+        }
+
+        li{
+
+        }
+
 
 
 
@@ -645,6 +845,14 @@
         .overflow_con::-webkit-scrollbar                                                   { width: 0.4vw;}
         .overflow_con::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
         .overflow_con::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
+
+        .h_box::-webkit-scrollbar                                                   { width: 0.4vw;}
+        .h_box::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
+        .h_box::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
+
+        .pop_up_text::-webkit-scrollbar                                                   { width: 0.4vw;}
+        .pop_up_text::-webkit-scrollbar-thumb                                             { background-color: var(--buttonColor);border-radius: 5px;}
+        .pop_up_text::-webkit-scrollbar-track                                             { background-color: rgb(231, 231, 231);border-radius: 5px;}
 
 
         .fade-enter-active, .fade-leave-active {
@@ -679,7 +887,9 @@
     <transition name = fade>
         <div class = profile_con v-show="profile_pages.state">
             <transition name = fade><main_profile class = main_profile v-show="profile_pages.sub_state.profile"></main_profile></transition>
-            <transition name = fade><chat class = chat v-show="profile_pages.sub_state.chat"></chat></transition>
+            <transition name = fade><chat class = chat v-if="profile_pages.sub_state.chat"></chat></transition>
+            <transition name = fade><discovery class = discovery v-if="profile_pages.sub_state.discovery"></discovery></transition>
+<!--            <transition name = fade><other_profile class = other_profile v-show="profile_pages.sub_state.other_profile"></other_profile></transition>-->
             <nav_vue class = login_nav></nav_vue>
         </div>
     </transition>
@@ -719,8 +929,9 @@
                         // 'Home',
                         'Sign Out',
                         'Profile',
-                        // 'Discovery',
+                        'Discovery',
                         'Chat',
+
                     ]
                 ]
 
@@ -738,8 +949,6 @@
 
         }
     })
-
-
 
     Vue.component('sign_in', {
         template:
@@ -787,59 +996,43 @@
 
         }
     })
+
     Vue.component('sign_up', {
         template:
             `
-                <div>
-                <div class = box style="height: 740px; top: 60%;" >
-                  <div class = overflow_con>
-                  <div class = input_con style="top:17px; ">
-                    <input type="text" class="text" placeholder="Email" v-model="sign_up_obj.email">
-                    <input type="text" class="text"  placeholder="First name" v-model="sign_up_obj.fname">
-                    <input type="text" class="text"  placeholder="Last name" v-model="sign_up_obj.lname">
-                    <input type="password" class="text"  placeholder="Password" v-model="sign_up_obj.password">
-                    <input type="text" class = "text"   placeholder="University" v-model="sign_up_obj.uni">
-                    <input type="text" class = "text"  placeholder="Major" v-model="sign_up_obj.major">
-                    <input type="text" class = "text"  placeholder="Class Standing" v-model="sign_up_obj.cls">
-                    <input type="text" class = "text"   placeholder="Quick Description" v-model="sign_up_obj.desc">
-                    <input type="text" class = "text"  placeholder="Job" v-model="sign_up_obj.job">
-<!--                    <input type="text" class = "text"  placeholder="Extra 1" v-model="sign_up_obj.extra1">-->
-<!--                    <input type="text" class = "text"  placeholder="Extra 2" v-model="sign_up_obj.extra2">-->
-<!--                    <input type="text" class = "text"  placeholder="Extra 3" v-model="sign_up_obj.extra3">-->
-                    <input type="text" class = "text"  placeholder="Class 1 Name" v-model="sign_up_obj.class1_name">
-                    <input type="text" class = "text"  placeholder="Class 1 Starting Time" v-model="sign_up_obj.class1_start">
-                    <input type="text" class = "text"  placeholder="Class 1 Ending Time" v-model="sign_up_obj.class1_end">
-                    <input type="text" class = "text"  placeholder="Class 1 Building" v-model="sign_up_obj.class1_build">
+              <div>
+              <div class=box style="height: 740px; top: 60%;">
+                <div class=overflow_con>
+                  <div class=input_con style="top:17px;">
 
-                    <input type="text" class = "text"  placeholder="Class 2 Name" v-model="sign_up_obj.class2_name">
-                    <input type="text" class = "text"  placeholder="Class 2 Starting Time" v-model="sign_up_obj.class2_start">
-                    <input type="text" class = "text"  placeholder="Class 2 Ending Time" v-model="sign_up_obj.class2_end">
-                    <input type="text" class = "text"  placeholder="Class 2 Building" v-model="sign_up_obj.class2_build">
+                    <input type="text" class="itext" placeholder="Email Address" v-model="sign_up_obj.email">
+                    <input type="text" class="itext" placeholder="First Name" v-model="sign_up_obj.fname">
+                    <input type="text" class="itext" placeholder="Last Name" v-model="sign_up_obj.lname">
+                    <input type="text" class="itext" placeholder="Password" v-model="sign_up_obj.password">
+                    <input type="text" class="itext" placeholder="Re-enter Password" v-model="sign_up_obj.rePass">
+                    <input type="text" class="itext" placeholder="University" v-model="sign_up_obj.uni">
+                    <input type="text" class="itext" placeholder="Major" v-model="sign_up_obj.major">
+                    <div class="text">Class Standing</div>
+                    <select class=itext style="color: black" v-model="sign_up_obj.cls">
+                      <option value="Freshman">Freshman</option>
+                      <option value="Sophomore">Sophomore</option>
+                      <option value="Junior">Junior</option>
+                      <option value="Senior">Senior</option>
+                    </select>
+                    <input type="text" class="itext" placeholder="Short description" v-model="sign_up_obj.desc">
+                    <div class="text">On campus?</div>
+                    <input type="checkbox" class="itext" style="cursor: pointer" v-model="sign_up_obj.on_campus">
+                    <input type="text" class="itext" placeholder="Job" v-model="sign_up_obj.job">
 
-                    <input type="text" class = "text"  placeholder="Class 3 Name" v-model="sign_up_obj.class3_name">
-                    <input type="text" class = "text"  placeholder="Class 3 Starting Time" v-model="sign_up_obj.class3_start">
-                    <input type="text" class = "text"  placeholder="Class 3 Ending Time" v-model="sign_up_obj.class3_end">
-                    <input type="text" class = "text"  placeholder="Class 3 Building" v-model="sign_up_obj.class3_build">
-
-                    <input type="text" class = "text"  placeholder="Class 4 Name" v-model="sign_up_obj.class4_name">
-                    <input type="text" class = "text"  placeholder="Class 4 Starting Time" v-model="sign_up_obj.class4_start">
-                    <input type="text" class = "text"  placeholder="Class 4 Ending Time" v-model="sign_up_obj.class4_end">
-                    <input type="text" class = "text"  placeholder="Class 4 Building" v-model="sign_up_obj.class4_build">
-
-                    <div style="text-align: center; font-family: 'home_font', sans-serif; ">On Campus?</div>
-                    <input type="checkbox" class = "text"  placeholder="On Campus?" v-model="sign_up_obj.on_campus">
-                    <input type="text" class = "text"  placeholder="Hobby 1" v-model="sign_up_obj.hob1">
-                    <input type="text" class = "text"  placeholder="Hobby 2" v-model="sign_up_obj.hob2">
-                    <input type="text" class = "text"  placeholder="Hobby 3" v-model="sign_up_obj.hob3">
-
-                    <div class = titlePhoto>Profile Photo Upload</div>
-                    <input type="file" class = photo_upload style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg" >
+                    <div class=titlePhoto>Profile Photo Upload</div>
+                    <input type="file" class=photo_upload id="photo_upload" style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg">
                   </div>
-                    </div>
-                  <button class = si_btn @click="createUser()">Sign Up</button>
-                  <div class = link @click="signIn()">Go Back</div>
                 </div>
-                </div>
+                <button class=si_btn @click="createUserWIP()" v-show="su">Sign Up</button>
+                <button class=si_btn v-show="!su" style="background-color:rgba(191,194,206,0.53)">Sign Up</button>
+                <div class=link @click="signIn()">Go Back</div>
+              </div>
+              </div>
 
             `,
         data(){
@@ -848,44 +1041,51 @@
                     email:'',
                     fname:'',
                     lname:'',
-                    password:'',
+                    // password:'',
+                    // rePass:'',
                     uni:'',
                     major:'',
+                    hob:[],
                     cls:'',
                     desc:'',
                     job:'',
-                    extra1:'',
-                    extra2:'',
-                    extra3:'',
+                    // extra1:'',
+                    // extra2:'',
+                    // extra3:'',
                     on_campus:false,
-                    hob1:'',
-                    hob2:'',
-                    hob3:'',
-                    class1_name:'',
-                    class1_start:'',
-                    class1_end:'',
-                    class1_build:'',
-                    class2_name:'',
-                    class2_start:'',
-                    class2_end:'',
-                    class2_build:'',
-                    class3_name:'',
-                    class3_start:'',
-                    class3_end:'',
-                    class3_build:'',
-                    class4_name:'',
-                    class4_start:'',
-                    class4_end:'',
-                    class4_build:'',
+
+                    // hob1:'',
+                    // hob2:'',
+                    // hob3:'',
+                    // class1_name:'',
+                    // class1_start:'',
+                    // class1_end:'',
+                    // class1_build:'',
+                    // class2_name:'',
+                    // class2_start:'',
+                    // class2_end:'',
+                    // class2_build:'',
+                    // class3_name:'',
+                    // class3_start:'',
+                    // class3_end:'',
+                    // class3_build:'',
+                    // class4_name:'',
+                    // class4_start:'',
+                    // class4_end:'',
+                    // class4_build:'',
+                    classes:[]
 
                 },
-                forSql:{}
+                forSql:{},
+                su:false
             }
         },
         methods: {
-            signUp(){
+            signUp(index){
 
-                webSocket.emit('js', JSON.stringify({type:'create_user', data:{}}))
+                console.log(index)
+
+                // webSocket.emit('js', JSON.stringify({type:'create_user', data:{}}))
 
 
 
@@ -894,41 +1094,72 @@
             signIn(){
                 app.$root.$emit('signin_page');
             },
-            createUser(){
+            // createUser(){
+            //
+            //     webSocket.emit('js', JSON.stringify({type:'setUserFileName', data:`${this.forSql.email}.user`})) // sets name of user file....
+            //
+            //
+            //     let defaultObj = this.forSql;
+            //     let defaultObjBlob = new Blob([JSON.stringify(defaultObj)], {type: 'text/plain'}); //default data...
+            //     let defaultObjForm = new FormData();
+            //     defaultObjForm.set('file', defaultObjBlob);
+            //
+            //
+            //     axios.post(`./users`, defaultObjForm, {
+            //
+            //         onUploadProgress: progressEvent => {
+            //             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            //
+            //             console.log(percentCompleted);
+            //
+            //         }
+            //     })
+            //         .then(res => {
+            //             if(diagnostic){console.log(res.data)}
+            //
+            //             if(res.data === 'OK'){
+            //
+            //                 app.$root.$emit('populate_profile', this.forSql); // populates the profile page....
+            //
+            //                 console.log(`user created!`);
+            //
+            //                 app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+            //             }
+            //         });
+            //
+            //
+            //     // webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql}));
+            // },
+            createUserWIP(){
 
-                webSocket.emit('js', JSON.stringify({type:'setUserFileName', data:`${this.forSql.email}.user`})) // sets name of user file....
+                let inComplete = false;
 
+                // for (const prop in this.forSql){ // lazy forum check...
+                //     console.log(this.forSql[prop])
+                //     if(this.forSql[prop] === ''){
+                //         inComplete = true;
+                //     }else{
+                //         // do nothing....
+                //     }
+                // }
 
-                let defaultObj = this.forSql;
-                let defaultObjBlob = new Blob([JSON.stringify(defaultObj)], {type: 'text/plain'}); //default data...
-                let defaultObjForm = new FormData();
-                defaultObjForm.set('file', defaultObjBlob);
+                if(inComplete === true){ // if forum is not complete....
+                    alert('Forum is not complete, please make sure that all fields are filled in to continue');
+                }else{
+                    webSocket.emit('js', JSON.stringify({type:'check_username_if_exists_already', data:this.forSql}));
+                }
 
+                webSocket.on('passed_already_exists_check',()=>{
+                    webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql})); // last thing to do....
+                }) // does not already exist....
 
-                axios.post(`./users`, defaultObjForm, {
+                webSocket.on('fully_done', ()=>{
+                    app.$root.$emit('populate_profile_first_time', this.forSql); // populates the profile page....
 
-                    onUploadProgress: progressEvent => {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log(`user created!`);
 
-                        console.log(percentCompleted);
-
-                    }
-                })
-                    .then(res => {
-                        if(diagnostic){console.log(res.data)}
-
-                        if(res.data === 'OK'){
-
-                            app.$root.$emit('populate_profile', this.forSql); // populates the profile page....
-
-                            console.log(`user created!`);
-
-                            app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
-                        }
-                    });
-
-
-                webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql}));
+                    app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                }) // photo fully uploaded....
             }
 
         },
@@ -950,9 +1181,19 @@
 
 
             })
+            this.$root.$on('enable_signup',(boo)=>{
+
+                if(boo === true){
+                    this.su = true;
+                }else{
+                    this.su = false;
+                }
+
+            })
 
         }
     })
+
     Vue.component('forgot', {
         template:
             `
@@ -997,70 +1238,129 @@
                 <div class=pPhoto>
                   <img :src='index.IMG'>
                 </div>
-                <div class = extras>
+                <div class=extras>
                   <ul v-for="extra in index.extras">
-                    <li class="desc"><img :src= 'extra.img' class = imgClass >{{ extra.item }}</li>
+                    <li class="desc"><img :src='extra.img' class=imgClass>{{ extra.item }}</li>
                   </ul>
                 </div>
-                <div class = pTitle>
-                  <div class = username>{{ index.username }}</div>
+                <div class=pTitle>
+                  <div class=username>{{ index.username }}</div>
                   <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
                   <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
                   <div class=divRow>
-                    <div class=divCol>
+                    <div class=divCol >
                       <div class=sub_contain>
-                        <div class = subTitle>Here For...</div>
+                        <div class=subTitle>Here For...</div>
                         <div class=desc>{{ index.desc }}</div>
                       </div>
                       <div class=sub_contain>
-                        <div class = subTitle>Hobbies & Interests</div>
-                        <ul v-for="hob in index.hobs">
-                          <li class="desc">{{ hob }}</li>
-                        </ul>
+                        <div class=subTitle>Hobbies & Interests</div>
+                        <div class=addBtn @click="open_popup('hob')">+Add</div>
+                        <div style="overflow: auto; position: relative; height: 100px" class=h_box>
+                          <ul v-for="hob in index.hob">
+                            <li class="desc">{{ hob }}</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
-                    <div class=divCol>
-                      <div class = subTitle>Mutual Connections</div>
+                    <div class=divCol >
+                      <div class=subTitle>Mutual Connections</div>
                       <div class=mutualConProfilePhotosBox>
                         <div class=pPhoto_small>
-                          <div style="font-family: 'home_font', sans-serif;">No Friends</div>
+                          <div style="font-family: 'normal_def';">No Friends</div>
                         </div>
                       </div>
 
                     </div>
                   </div>
                   <div class=greySubBackground>
-                    <div class=white_container>
-                      <div class="table_div2">
-                        <div class="column_div2" v-for="item in index.classes">
-                          <div class = schd_box>
-                            <table>
-                              <tr>
-                                <th>Class</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Building</th>
-                              </tr>
-                              <tr>
-                                <td>{{item.class}}</td>
-                                <td>{{item.startTime}}</td>
-                                <td>{{item.endTime}}</td>
-                                <td>{{item.building}}</td>
-                              </tr>
-                            </table>
-                          </div>
+                    <div class="table_div2">
+                      <div>School Schedule</div>
+                      <div class=addBtn @click="open_popup('classes')">+Add</div>
+                      <div class="column_div2" v-for="item in index.classes">
+                        <div class=schd_box>
+                          <table>
+                            <tr>
+                              <th  style="text-align: center">Class</th>
+                              <th style="text-align: center">DOW</th>
+                              <th style="text-align: center">Start Time</th>
+                              <th style="text-align: center">End Time</th>
+                              <th style="text-align: center">Building</th>
+                            </tr>
+                            <tr>
+                              <td>{{ item.class }}</td>
+                              <td>
+                                <ul>
+                                  <li style="display: inline-block;padding: 5px" v-for="thing in item.dow">{{thing}}</li>
+                                </ul>
+                              </td>
+                              <td>{{ item.startTime }}</td>
+                              <td>{{ item.endTime }}</td>
+                              <td>{{ item.building }}</td>
+                            </tr>
+                          </table>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div class="popup" v-if="this.hobbie_popup">
+                <div class=pop_up_text>
+                  <div class = close @click="hobbie_popup = false">Close</div>
+                  <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>
+                </div>
+                <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>
+              </div>
+
+              <div class="popup" v-if="this.classes_popup" style="top: 885px">
+                <div class=pop_up_text>
+                  <div class = close @click="classes_popup = false">Close</div>
+                  <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">
+                  <div class = dofW>Monday</div>
+                  <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">
+                  <div class = dofW>Tuesday</div>
+                  <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">
+                  <div class = dofW>Wednesday</div>
+                  <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">
+                  <div class = dofW>Thursday</div>
+                  <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">
+                  <div class = dofW>Friday</div>
+                  <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">
+                  <div class = dofW>Start Time:</div>
+                  <input class="ptext" type="time" v-model="class_addition.start_time">
+                  <div class = dofW>End Time:</div>
+                  <input class="ptext" type="time" v-model="class_addition.end_time">
+                  <div class = dofW>Building:</div>
+                  <input class="ptext" type="text" v-model="class_addition.building">
+
+                </div>
+                <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>
+              </div>
               </div>
 
             `,
         data(){
             return {
-                profile:[]
+                profile:[],
+                hobbie_popup:false,
+                classes_popup:false,
+                hobbie_addition:'',
+                class_addition:{
+                    classname:'',
+                    days_of_week:{
+                        mon:false,
+                        tus:false,
+                        wed:false,
+                        thu:false,
+                        fri:false,
+                    },
+                    start_time:'',
+                    end_time:'',
+                    building:''
+                },
+                hNi:true
 
             }
         },
@@ -1070,6 +1370,72 @@
             },
             signIn(){
                 app.$root.$emit('signin_page');
+            },
+            open_popup(pop){
+                try{
+                    switch (pop) {
+                        case 'hob':
+                            this.hobbie_popup = true;
+                            break;
+                        case 'classes':
+                            this.classes_popup = true;
+                            break;
+                        default:
+                            break;
+
+                    }
+                }catch (e) {
+                    console.log(e.message)
+                }
+
+
+            },
+            add_hobbie(hobby){
+                console.log(hobby);
+                app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
+                // updateDb();
+            },
+            add_class(newClass){
+                console.log(newClass);
+
+                // {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
+
+                // <td>{{ item.class }}</td>
+                // <td>{{ item.startTime }}</td>
+                // <td>{{ item.startTime }}</td>
+                // <td>{{ item.endTime }}</td>
+                // <td>{{ item.building }}</td>
+
+                let classObj = {
+                    class:newClass.classname,
+                    startTime:newClass.start_time,
+                    endTime:newClass.end_time,
+                    building:newClass.building,
+                }
+
+                let dowArray = [];
+
+                for (const day in newClass.days_of_week){
+                    if(newClass.days_of_week[day] === true){
+                        dowArray.push(day.toUpperCase());
+                    }
+                }
+
+                classObj['dow'] = dowArray;
+
+                console.log(classObj);
+
+
+                // newClass.days_of_week.forEach(day=>{
+                //     if(day){
+                //
+                //     }
+                // })
+
+
+
+                app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
+                // updateDb();
             }
         },
         computed:{
@@ -1077,6 +1443,32 @@
         },
         mounted(){
 
+            this.$root.$on('populate_profile_first_time', (data)=>{
+
+                localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
+
+                this.profile.splice(0);
+
+                console.log(data);
+
+                let newObj = {
+                    username:`${data.fname} ${data.lname}`,
+                    on_campus: data.on_campus,
+                    IMG:data.photoPath,
+                    school:data.uni,
+                    job:data.job,
+                    degree:data.major,
+                    extras:[
+                        {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
+                        {item:`${data.major}`, img:'./photos/net.png'},
+                    ],
+                    hob:[],
+                    desc:data.desc,
+                    classes:[]
+                }
+
+                this.profile = [newObj];
+            })
             this.$root.$on('populate_profile', (data)=>{
 
                 localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
@@ -1096,27 +1488,28 @@
                         {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
                         {item:`${data.major}`, img:'./photos/net.png'},
                     ],
-                    hobs:[
-                        data.hob1,
-                        data.hob2,
-                        data.hob3
-                    ],
+                    hob:data.hob,
                     desc:data.desc,
-                    classes:[
-                        {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
-                        {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
-                        {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
-                        {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
-                    ]
+                    classes:data.classes
 
 
                 }
+                //
+                // {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
+                // {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
+                // {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
+                // {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
 
                 this.profile = [newObj];
+            })
+            this.$root.$on('remove_popup', ()=>{
+
+                this.hobbie_popup = false;
             })
 
         }
     })
+
     Vue.component('chat', {
         template:
             `
@@ -1245,6 +1638,238 @@
         }
     })
 
+    Vue.component('discovery', {
+        template:
+            `
+              <div>
+
+              </div>
+
+            `,
+        data(){
+            return {
+                chat:[
+                    {
+                        otherPerson:'Rick Sanchez',
+                        chat:[
+                            {to:'Larry', from:'Rick', timestamp:'4:06 PM', msg:'Hello Larry!'},
+                            {to:'Rick', from:'Larry', timestamp:'4:07 PM', msg:'Hey Rick!'},
+                            {to:'Larry', from:'Rick', timestamp:'6:38 PM', msg:'Nothing much, just won the lottery...'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Garry Jerry',
+                        chat:[
+                            {to:'Larry', from:'Garry', timestamp:'3:12 PM', msg:'Hello Larry!'},
+                            {to:'Garry', from:'Larry', timestamp:'3:12 PM', msg:'Hello Garry!'},
+                            {to:'Larry', from:'Garry', timestamp:'3:13 PM', msg:'Did you know that our names rhyme?'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Sarah Thomas',
+                        chat:[
+                            {to:'Larry', from:'Sarah', timestamp:'1:06 PM', msg:'Hello Larry!'},
+                            {to:'Sarah', from:'Larry', timestamp:'1:06 PM', msg:'Hello Sarah!'},
+                            {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'What are you up to?'},
+                            {to:'Sarah', from:'Larry', timestamp:'1:08 PM', msg:'Skydiving'},
+                            {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'Oh wow, I have never been! Is it fun?'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Emily Squiggle',
+                        chat:[
+                            {to:'Larry', from:'Emily', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Emily', from:'Larry', timestamp:'2:07 PM', msg:'Whats up?'},
+                            {to:'Larry', from:'Emily', timestamp:'2:08 PM', msg:'With my parents at a christmas party.'}
+                        ]
+                    },
+                    {
+                        otherPerson:'Austin Boston',
+                        chat:[
+                            {to:'Larry', from:'Austin', timestamp:'2:06 PM', msg:'Hello Larry!'},
+                            {to:'Austin', from:'Larry', timestamp:'2:07 PM', msg:'Hello Austin!'},
+                            {to:'Larry', from:'Austin', timestamp:'2:08 PM', msg:'Test complete!'}
+                        ]
+                    },
+                ],
+                chatWindowArray:[
+
+                ],
+                inputText:'',
+                hold:''
+
+            }
+        },
+        methods: {
+            populateChatWindow(index){ // call this when done...
+                this.activate(index.otherPerson);
+
+                this.chatWindowArray.splice(0); // clears out array from previous....
+
+                index.chat.forEach(msg=>{
+                    this.chatWindowArray.push({to:msg.to, from:msg.from, timestamp:msg.timestamp, msg:msg.msg});
+                })
+
+            },
+            appendTextToChat(){
+                console.log(this.inputText);
+
+                // this.chatWindowArray.push({to:'Test', from:'test', timestamp:'none', msg:this.inputText});
+
+                this.chat.forEach(chat_session=>{
+                    if(chat_session.otherPerson === this.hold){ // if chat compared is the one currently selected on the page...
+                        console.log('here')
+                        chat_session.chat.push({to:'Test', from:'test', timestamp:moment().format('LT'), msg:this.inputText})
+                        this.populateChatWindow(chat_session);
+                        // chat_session.chat.push()
+                    }
+                })
+
+
+
+
+
+            },
+            activate(name) {
+                this.hold = name;
+            },
+        },
+        computed:{
+
+        },
+        mounted(){
+
+        }
+    })
+
+    // Vue.component('other_profile', {
+    //     template:
+    //             `
+    //               <div>
+    //               <div class=profileTopBoarder v-for="index in this.profile">
+    //                 <div class=pPhoto>
+    //                   <img :src='index.IMG'>
+    //                 </div>
+    //                 <div class = extras>
+    //                   <ul v-for="extra in index.extras">
+    //                     <li class="desc"><img :src= 'extra.img' class = imgClass >{{ extra.item }}</li>
+    //                   </ul>
+    //                 </div>
+    //                 <div class = pTitle>
+    //                   <div class = username>{{ index.username }}</div>
+    //                   <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
+    //                   <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+    //                   <div class=divRow>
+    //                     <div class=divCol>
+    //                       <div class=sub_contain>
+    //                         <div class = subTitle>Here For...</div>
+    //                         <div class=desc>{{ index.desc }}</div>
+    //                       </div>
+    //                       <div class=sub_contain>
+    //                         <div class = subTitle>Hobbies & Interests</div>
+    //                         <ul v-for="hob in index.hobs">
+    //                           <li class="desc">{{ hob }}</li>
+    //                         </ul>
+    //                       </div>
+    //                     </div>
+    //                     <div class=divCol>
+    //                       <div class = subTitle>Mutual Connections</div>
+    //                       <div class=mutualConProfilePhotosBox>
+    //                         <div class=pPhoto_small>
+    //                           <div style="font-family: 'normal_def';">No Friends</div>
+    //                         </div>
+    //                       </div>
+    //
+    //                     </div>
+    //                   </div>
+    //                   <div class=greySubBackground>
+    //                     <div class=white_container>
+    //                       <div class="table_div2">
+    //                         <div class="column_div2" v-for="item in index.classes">
+    //                           <div class = schd_box>
+    //                             <table>
+    //                               <tr>
+    //                                 <th>Class</th>
+    //                                 <th>Start Time</th>
+    //                                 <th>End Time</th>
+    //                                 <th>Building</th>
+    //                               </tr>
+    //                               <tr>
+    //                                 <td>{{item.class}}</td>
+    //                                 <td>{{item.startTime}}</td>
+    //                                 <td>{{item.endTime}}</td>
+    //                                 <td>{{item.building}}</td>
+    //                               </tr>
+    //                             </table>
+    //                           </div>
+    //                         </div>
+    //                       </div>
+    //                     </div>
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //               </div>
+    //
+    //             `,
+    //     data(){
+    //         return {
+    //             profile:[]
+    //
+    //         }
+    //     },
+    //     methods: {
+    //         signUp(){
+    //             app.$root.$emit('signup_page');
+    //         },
+    //         signIn(){
+    //             app.$root.$emit('signin_page');
+    //         }
+    //     },
+    //     computed:{
+    //
+    //     },
+    //     mounted(){
+    //
+    //         this.$root.$on('populate_profile', (data)=>{
+    //
+    //             localStorage.setItem('user', JSON.stringify(data)); // saves user to browser's local storage....
+    //
+    //             this.profile.splice(0);
+    //
+    //             console.log(data);
+    //
+    //             let newObj = {
+    //                 username:`${data.fname} ${data.lname}`,
+    //                 on_campus: data.on_campus,
+    //                 IMG:data.photoPath,
+    //                 school:data.uni,
+    //                 job:data.job,
+    //                 degree:data.major,
+    //                 extras:[
+    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
+    //                     {item:`${data.major}`, img:'./photos/net.png'},
+    //                 ],
+    //                 hobs:[
+    //                     data.hob1,
+    //                     data.hob2,
+    //                     data.hob3
+    //                 ],
+    //                 desc:data.desc,
+    //                 classes:[
+    //                     {class:data.class1_name,startTime:data.class1_start, endTime:data.class1_end, building:data.class1_build},
+    //                     {class:data.class2_name,startTime:data.class2_start, endTime:data.class2_end, building:data.class2_build},
+    //                     {class:data.class3_name,startTime:data.class3_start, endTime:data.class3_end, building:data.class3_build},
+    //                     {class:data.class4_name,startTime:data.class4_start, endTime:data.class4_end, building:data.class4_build},
+    //                 ]
+    //
+    //
+    //             }
+    //
+    //             this.profile = [newObj];
+    //         })
+    //
+    //     }
+    // })
 
     let app = new Vue({
         el: '#vueApp',
@@ -1254,8 +1879,8 @@
                     {
                         state:true,
                         sub_state:{
-                            sign_in:true,
-                            sign_up:false,
+                            sign_in:false,
+                            sign_up:true,
                             forgot:false,
                         }
                     },
@@ -1265,15 +1890,91 @@
                         sub_state:{
                             chat:false,
                             profile:false,
-                            home:false,
                             discovery:false,
+                            other_profile:false
                         }
-                    }
+                    },
+                update: {}
 
             }
         },
-        methods:{
 
+        methods:{
+            updateBrowser(page, prop, data){
+                try{
+                    switch (page) {
+                        case 'Profile': // profile page...
+                            let past_user = localStorage.getItem('user'); // grab old user....
+                            if(past_user !== null){
+                                past_user = JSON.parse(past_user);
+                                console.log(past_user);
+
+
+                                past_user[prop].push(data); // change data
+
+                                localStorage.clear();
+
+                                localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+
+                                app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                app.$root.$emit('remove_popup'); // removes the popup...
+
+
+                                // try{
+                                //     switch (prop) {
+                                //         case 'hob':
+                                //             past_user[prop].push(data); // change data
+                                //             // past_user[prop] = [] // change data
+                                //
+                                //             localStorage.clear();
+                                //
+                                //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                //
+                                //             // location.reload();
+                                //
+                                //
+                                //
+                                //             app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                //             app.$root.$emit('remove_popup'); // removes the popup...
+                                //             break;
+                                //         case 'classes':
+                                //             past_user.classes.push()
+                                //             break;
+                                //         default:
+                                //             break;
+                                //
+                                //     }
+                                // }catch (e) {
+                                //     console.log(e.message)
+                                // }
+
+                                // past_user[prop].push(data); // change data
+                                // // past_user[prop] = [] // change data
+                                //
+                                // localStorage.clear();
+                                //
+                                // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                //
+                                // // location.reload();
+                                //
+                                //
+                                //
+                                // app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                // app.$root.$emit('remove_popup'); // removes the popup...
+
+                                // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+                            }
+                            break;
+                        case 'Chat': // chat page...
+                            break;
+                        default:
+                            break;
+
+                    }
+                }catch (e) {
+                    console.log(e.message)
+                }
+            }
         },
         mounted(){
             this.$root.$on('signup_page',()=>{ // show sign_up
@@ -1421,6 +2122,13 @@
 
 
             })
+            this.$root.$on('update_browser',(page, prop, data)=>{ // upload start
+                this.updateBrowser(page, prop, data);
+
+
+
+
+            })
 
         }
     })
@@ -1442,15 +2150,13 @@
         } catch (ex) {
         }
     })
+
     webSocket.on('alert', function(data) {
         try {
            alert(data);
         } catch (ex) {
         }
     })
-
-
-
 
 
 </script>
@@ -1512,12 +2218,15 @@
 
                             webSocket.emit('js',JSON.stringify({type:'getPhotoName'}));
 
+                            console.log('Getting photoName....')
+
 
                         }
 
                         webSocket.on('photoRes',(name)=>{
                             console.log(name);
                             app.$root.$emit('upload_complete', (name));
+                            app.$root.$emit('enable_signup', true);
 
 
                         })
@@ -1526,7 +2235,7 @@
                     })
             };
             fileReader.readAsArrayBuffer(file)
-            $("#photo_upload")[0].value = '';
+            // $("#photo_upload")[0].value = '';
         }else{
             console.log(`file undefined`);
         }
@@ -1542,9 +2251,9 @@
 
             console.log(past_user);
 
-            app.$root.$emit('populate_profile', past_user); // populates profile.....
+            app.$root.$emit('populate_profile', past_user); // populates profile..... // one of these should be made for each page to be populated....
 
-            app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
+            app.$root.$emit('go_to_page',('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
         }
 
     }catch (e) {
