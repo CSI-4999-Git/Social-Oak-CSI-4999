@@ -215,73 +215,6 @@ server = app.listen(portNum, function () {
 
         log.log('info', error.e.no_error.code, fileName, `Socket.io connected`, false, new Error().stack);
 
-        // socket.on('js', function (data) {
-        //
-        //     let msg = JSON.parse(data);
-        //
-        //     switch (msg.type) {
-        //
-        //         case 'authCheck':
-        //             (async () => {
-        //
-        //                 console.log(msg);
-        //
-        //                 const allUsers = await getAllUsers();
-        //                 console.log(allUsers.rows); // adjust for all profiles....
-        //
-        //                 allUsers.rows.forEach(user=>{
-        //                     if(user.email === msg.data.username){
-        //                         console.log('Successful login!');
-        //                         personal_io.emit('html', JSON.stringify({type:'profile', data:user}));
-        //
-        //
-        //                     }else{
-        //                         //do nothing....
-        //                     }
-        //                 })
-        //
-        //
-        //
-        //                 // setTimeout(()=>{
-        //                 //     personal_io.emit('html', JSON.stringify({type:'profile', data:allUsersArray.rows[0]}))
-        //                 //     console.log('emitted...')
-        //                 // },5000)
-        //
-        //                 // personal_io.emit('html', JSON.stringify({type:'profile', data:allUsersArray.rows[0]}))
-        //
-        //                 console.log('done');
-        //
-        //
-        //
-        //
-        //             })();
-        //             break;
-        //         case 'createUser':
-        //             (async () => {
-        //
-        //
-        //                 console.log(msg);
-        //
-        //                 let res = await create_user(msg.data.email, msg.data.uni, msg.data.major, msg.data.cls, msg.data.fname, msg.data.lname, msg.data.desc, msg.data.photoPath, msg.data.job);
-        //                 console.log(res.rows); // new profile...
-        //
-        //
-        //                 console.log('done');
-        //
-        //
-        //
-        //
-        //             })();
-        //             break;
-        //         case 'getPhotoName':
-        //             if(profilePhotoFileName !== undefined){
-        //                 personal_io.emit('photoRes', JSON.stringify(profilePhotoFileName))
-        //             }
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // })
         socket.on('js', function (data) {
 
             let msg = JSON.parse(data);
@@ -374,6 +307,17 @@ server = app.listen(portNum, function () {
                     break;
                 case 'setUserFileName':
                    userFileName = msg.data;
+                    break;
+                case 'getAllUsers':
+                    (async () => {
+
+                        const users = await getAllUsers();
+                        console.log(users.rows);
+                        console.log('done');
+
+                        io.emit('all_users', JSON.stringify({type:'user_data', data:users.rows}))
+
+                    })();
                     break;
                 default:
                     break;
