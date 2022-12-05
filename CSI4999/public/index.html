@@ -572,14 +572,27 @@
         /*    border-bottom-left-radius: 20px;*/
         /*}*/
 
-        .input_bar{
+        .input_bar2{
             position: absolute;
         /* bottom: 25px; */
             bottom: 5px;
-            height: 55px;
+            height: 100%;
             width: 100%;
         /* left: 50%; */
         /* transform: translate(-50%,0); */
+            background-color: #0c476d;
+            /*border-bottom-right-radius: 20px;*/
+            /*border-bottom-left-radius: 20px;*/
+        }
+
+        .input_bar{
+            position: absolute;
+            /* bottom: 25px; */
+            bottom: 5px;
+            height: 55px;
+            width: 100%;
+            /* left: 50%; */
+            /* transform: translate(-50%,0); */
             background-color: #e0e0e2;
             /*border-bottom-right-radius: 20px;*/
             /*border-bottom-left-radius: 20px;*/
@@ -917,7 +930,7 @@
             top: 0px;
             width: 100%;
             /*height: 40%;*/
-            background-color: green;
+            /*background-color: green;*/
         }
 
         #search{
@@ -926,6 +939,80 @@
             top: 50%;
             transform: translate(-50%,-50%);
             width: 50%;
+        }
+
+
+
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .nav_switch{
+            position: absolute;
+        /* float: left; */
+        /* display: inline-block; */
+            top: 50%;
+            transform: translate(0, -49%);
+            right: 130px;
         }
 
 
@@ -985,7 +1072,8 @@
         <div class = profile_con v-show="profile_pages.state">
             <transition name = fade><main_profile class = main_profile v-show="profile_pages.sub_state.profile"></main_profile></transition>
             <transition name = fade><chat class = chat v-if="profile_pages.sub_state.chat"></chat></transition>
-            <transition name = fade><discovery class = discovery v-if="profile_pages.sub_state.discovery"></discovery></transition>
+            <transition name = fade><discovery class = discovery v-show="profile_pages.sub_state.discovery"></discovery></transition>
+<!--            <transition name = fade><other_profile class = other_profile v-if="profile_pages.sub_state.other_profile"></other_profile></transition>-->
             <nav_vue class = login_nav></nav_vue>
         </div>
     </transition>
@@ -1015,6 +1103,12 @@
                     <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item.name}}</li>
                   </ul>
                   <img src="photos/acorn2.png" class = iconz>
+                  <div class = nav_switch>
+                    <label class="switch" id = nav_switch>
+                      <input type="checkbox">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
                 </nav>
               </div>
 
@@ -1171,8 +1265,8 @@
                     <input type="text" class="itext" placeholder="Email Address" v-model="sign_up_obj.email">
                     <input type="text" class="itext" placeholder="First Name" v-model="sign_up_obj.fname">
                     <input type="text" class="itext" placeholder="Last Name" v-model="sign_up_obj.lname">
-                    <input type="text" class="itext" placeholder="Password" v-model="sign_up_obj.password">
-                    <input type="text" class="itext" placeholder="Re-enter Password" v-model="sign_up_obj.rePass">
+                    <input type="password" class="itext" placeholder="Password" v-model="sign_up_obj.password">
+                    <input type="password" class="itext" placeholder="Re-enter Password" v-model="sign_up_obj.rePass">
                     <input type="text" class="itext" placeholder="University" v-model="sign_up_obj.uni">
                     <input type="text" class="itext" placeholder="Major" v-model="sign_up_obj.major">
                     <div class="text">Class Standing</div>
@@ -1223,77 +1317,6 @@
             back_to_sign_in(){
                 app.$root.$emit('go_to_page',('sign_in'));
             },
-            // createUser(){
-            //
-            //     webSocket.emit('js', JSON.stringify({type:'setUserFileName', data:`${this.forSql.email}.user`})) // sets name of user file....
-            //
-            //
-            //     let defaultObj = this.forSql;
-            //     let defaultObjBlob = new Blob([JSON.stringify(defaultObj)], {type: 'text/plain'}); //default data...
-            //     let defaultObjForm = new FormData();
-            //     defaultObjForm.set('file', defaultObjBlob);
-            //
-            //
-            //     axios.post(`./users`, defaultObjForm, {
-            //
-            //         onUploadProgress: progressEvent => {
-            //             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            //
-            //             console.log(percentCompleted);
-            //
-            //         }
-            //     })
-            //         .then(res => {
-            //             if(diagnostic){console.log(res.data)}
-            //
-            //             if(res.data === 'OK'){
-            //
-            //                 app.$root.$emit('populate_profile', this.forSql); // populates the profile page....
-            //
-            //                 console.log(`user created!`);
-            //
-            //                 app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
-            //             }
-            //         });
-            //
-            //
-            //     // webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql}));
-            // },
-            // createUserWIP(){
-            //
-            //
-            //
-            //
-            //
-            //     let inComplete = false;
-            //
-            //     // for (const prop in this.forSql){ // lazy forum check...
-            //     //     console.log(this.forSql[prop])
-            //     //     if(this.forSql[prop] === ''){
-            //     //         inComplete = true;
-            //     //     }else{
-            //     //         // do nothing....
-            //     //     }
-            //     // }
-            //
-            //     if(inComplete === true){ // if forum is not complete....
-            //         alert('Forum is not complete, please make sure that all fields are filled in to continue');
-            //     }else{
-            //         webSocket.emit('js', JSON.stringify({type:'check_username_if_exists_already', data:this.forSql}));
-            //     }
-            //
-            //     webSocket.on('passed_already_exists_check',()=>{
-            //         webSocket.emit('js', JSON.stringify({type:'createUser', data:this.forSql})); // last thing to do....
-            //     }) // does not already exist....
-            //
-            //     webSocket.on('fully_done', ()=>{
-            //         app.$root.$emit('populate_profile_first_time', this.forSql); // populates the profile page....
-            //
-            //         console.log(`user created!`);
-            //
-            //         app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
-            //     }) // photo fully uploaded....
-            // },
             create_user(user){
                 if(diagnostic){console.log('check 1');}
                 if(diagnostic){console.log(user);}
@@ -1608,7 +1631,7 @@
                 if(diagnostic){console.log(hobby)}
                 app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
                 app.$root.$emit('update_db','Profile', 'hob', hobby); // sends to function to update db storage....
-            },
+            }, // after completing popup...
             add_class(newClass){
                 if(diagnostic){console.log(newClass)}
 
@@ -1633,7 +1656,7 @@
 
                 app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
                 app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
-            }
+            }// after completing popup...
         },
         computed:{
 
@@ -1848,107 +1871,489 @@
         template:
             `
               <div>
-              <div class = main_contain>
-                <div class = row_div style="top: 60px; height: 10%">
-                  <div class = input_bar style="background-color: transparent; top: 50%; transform: translate(0,-50%)">
-                    <div class = table_div_chat>
+              <div class=main_contain>
+                <div class=row_div style="top: 60px; height: 10%">
+                  <div class=input_bar2 style="top: 50%; transform: translate(0,-50%)">
+                    <div class=table_div_chat>
 
-                      <div class = column_div_chat style="width: 90%;">
-                        <input type="text" class = userIn placeholder="Search by email for users..." v-model="inputText">
+                      <div class=column_div_chat style="width: 90%;">
+                        <input type="text" class=userIn placeholder="Search by email for users..." v-model="inputText">
                       </div>
 
-                      <div class = column_div_chat style="width: 8%;">
-                        <div class = send_btn @click="searchForUser(inputText)">Search</div>
+                      <div class=column_div_chat style="width: 8%;">
+                        <div class=send_btn @click="searchForUser(inputText)">Search</div>
                       </div>
 
                     </div>
                   </div>
                 </div>
-                <div class = row_div style="height: 850px; top: 60px; background-color: red"></div>
+                <div class=row_div style="height: 850px; top: 60px;">
+                  <div>
+                    <div class=profileTopBoarder v-for="index in this.other_profile">
+                      <div class=pPhoto>
+                        <img :src='index.IMG'>
+                      </div>
+                      <div class=extras>
+                        <ul v-for="extra in index.extras">
+                          <li class="desc"><img :src='extra.img' class=imgClass>{{ extra.item }}</li>
+                        </ul>
+                      </div>
+                      <div class=pTitle>
+                        <div class=username>{{ index.username }}</div>
+                        <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
+                        <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+                        <div class=divRow>
+                          <div class=divCol >
+                            <div class=sub_contain>
+                              <div class=subTitle>Here For...</div>
+                              <div class=desc>{{ index.desc }}</div>
+                            </div>
+                            <div class=sub_contain>
+                              <div class=subTitle>Hobbies & Interests</div>
+<!--                              <div class=addBtn @click="open_popup('hob')">+Add</div>-->
+                              <div style="overflow: auto; position: relative; height: 100px" class=h_box>
+                                <ul v-for="hob in index.hob">
+                                  <li class="desc">{{ hob }}</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div class=divCol >
+                            <div class=subTitle>Mutual Connections</div>
+                            <div class=mutualConProfilePhotosBox>
+                              <div class=pPhoto_small>
+                                <div style="font-family: 'normal_def';">No Friends</div>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                        <div class=greySubBackground>
+                          <div class="table_div2">
+                            <div>School Schedule</div>
+<!--                            <div class=addBtn @click="open_popup('classes')">+Add</div>-->
+                            <div class="column_div2" v-for="item in index.classes">
+                              <div class=schd_box>
+                                <table>
+                                  <tr>
+                                    <th  style="text-align: center">Class</th>
+                                    <th style="text-align: center">DOW</th>
+                                    <th style="text-align: center">Start Time</th>
+                                    <th style="text-align: center">End Time</th>
+                                    <th style="text-align: center">Building</th>
+                                  </tr>
+                                  <tr>
+                                    <td>{{ item.class }}</td>
+                                    <td>
+                                      <ul>
+                                        <li style="display: inline-block;padding: 5px" v-for="thing in item.dow">{{thing}}</li>
+                                      </ul>
+                                    </td>
+                                    <td>{{ item.startTime }}</td>
+                                    <td>{{ item.endTime }}</td>
+                                    <td>{{ item.building }}</td>
+                                  </tr>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+<!--                    <div class="popup" v-if="this.hobbie_popup">-->
+<!--                      <div class=pop_up_text>-->
+<!--                        <div class = close @click="hobbie_popup = false">Close</div>-->
+<!--                        <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>-->
+<!--                      </div>-->
+<!--                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>-->
+<!--                    </div>-->
+
+<!--                    <div class="popup" v-if="this.classes_popup" style="top: 885px">-->
+<!--                      <div class=pop_up_text>-->
+<!--                        <div class = close @click="classes_popup = false">Close</div>-->
+<!--                        <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">-->
+<!--                        <div class = dofW>Monday</div>-->
+<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">-->
+<!--                        <div class = dofW>Tuesday</div>-->
+<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">-->
+<!--                        <div class = dofW>Wednesday</div>-->
+<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">-->
+<!--                        <div class = dofW>Thursday</div>-->
+<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">-->
+<!--                        <div class = dofW>Friday</div>-->
+<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">-->
+<!--                        <div class = dofW>Start Time:</div>-->
+<!--                        <input class="ptext" type="time" v-model="class_addition.start_time">-->
+<!--                        <div class = dofW>End Time:</div>-->
+<!--                        <input class="ptext" type="time" v-model="class_addition.end_time">-->
+<!--                        <div class = dofW>Building:</div>-->
+<!--                        <input class="ptext" type="text" v-model="class_addition.building">-->
+
+<!--                      </div>-->
+<!--                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>-->
+<!--                    </div>-->
+                  </div>
+                </div>
               </div>
               </div>
 
             `,
         data(){
             return {
-                chat:[
-                    {
-                        otherPerson:'Rick Sanchez',
-                        chat:[
-                            {to:'Larry', from:'Rick', timestamp:'4:06 PM', msg:'Hello Larry!'},
-                            {to:'Rick', from:'Larry', timestamp:'4:07 PM', msg:'Hey Rick!'},
-                            {to:'Larry', from:'Rick', timestamp:'6:38 PM', msg:'Nothing much, just won the lottery...'}
-                        ]
-                    },
-                    {
-                        otherPerson:'Garry Jerry',
-                        chat:[
-                            {to:'Larry', from:'Garry', timestamp:'3:12 PM', msg:'Hello Larry!'},
-                            {to:'Garry', from:'Larry', timestamp:'3:12 PM', msg:'Hello Garry!'},
-                            {to:'Larry', from:'Garry', timestamp:'3:13 PM', msg:'Did you know that our names rhyme?'}
-                        ]
-                    },
-                    {
-                        otherPerson:'Sarah Thomas',
-                        chat:[
-                            {to:'Larry', from:'Sarah', timestamp:'1:06 PM', msg:'Hello Larry!'},
-                            {to:'Sarah', from:'Larry', timestamp:'1:06 PM', msg:'Hello Sarah!'},
-                            {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'What are you up to?'},
-                            {to:'Sarah', from:'Larry', timestamp:'1:08 PM', msg:'Skydiving'},
-                            {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'Oh wow, I have never been! Is it fun?'}
-                        ]
-                    },
-                    {
-                        otherPerson:'Emily Squiggle',
-                        chat:[
-                            {to:'Larry', from:'Emily', timestamp:'2:06 PM', msg:'Hello Larry!'},
-                            {to:'Emily', from:'Larry', timestamp:'2:07 PM', msg:'Whats up?'},
-                            {to:'Larry', from:'Emily', timestamp:'2:08 PM', msg:'With my parents at a christmas party.'}
-                        ]
-                    },
-                    {
-                        otherPerson:'Austin Boston',
-                        chat:[
-                            {to:'Larry', from:'Austin', timestamp:'2:06 PM', msg:'Hello Larry!'},
-                            {to:'Austin', from:'Larry', timestamp:'2:07 PM', msg:'Hello Austin!'},
-                            {to:'Larry', from:'Austin', timestamp:'2:08 PM', msg:'Test complete!'}
-                        ]
-                    },
-                ],
-                chatWindowArray:[
-
-                ],
-                inputText:'',
-                hold:''
+                other_profile:[],
+                inputText:''
 
             }
         },
         methods: {
             searchForUser(username){
 
-                webSocket.emit('js', JSON.stringify({type:'getAllUsers'}))
+                console.log(username);
 
-                webSocket.on('all_users',(data)=>{
-                    let parsed_data = JSON.parse(data);
-                    console.log(parsed_data)
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+                let stuff = JSON.stringify({username: username});
+
+                let config = {
+                    method: 'post',
+                    url: 'http://198.74.61.26:8080/profile/read_other/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : stuff
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(response.data);
+
+                        app.$root.$emit('populate_profile_other', response.data);
+
+                        // app.$root.$emit('go_to_page', ('other_profile'));
 
 
-                })
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    this.inputText = '';
+                        alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                        // this.inputText = '';
+
+                    });
 
 
 
-            },
-            activate(name) {
-                this.hold = name;
+
             },
         },
         computed:{
 
         },
         mounted(){
+            this.$root.$on('populate_profile_other', (data)=>{
+
+                console.log(data);
+
+                this.other_profile.splice(0);
+
+                if(diagnostic){console.log(data)}
+
+                let newObj = {
+                    username:`${data.first_name} ${data.last_name}`,
+                    on_campus: data.on_campus,
+                    IMG:data.avatar,
+                    school:data.university,
+                    job:data.job,
+                    degree:data.major,
+                    extras:[
+                        {item:`${data.class_standing}, Undergraduate`, img:'./photos/hat.png'},
+                        {item:`${data.major}`, img:'./photos/net.png'},
+                    ],
+                    hob:data.interests,
+                    desc:data.about_me,
+                    classes:data.class_schedules
+
+
+                }
+
+                this.other_profile = [newObj];
+                console.log('done')
+
+            })
 
         }
     })
+
+    // Vue.component('other_profile', {
+    //     template:
+    //         `
+    //           <div>
+    //           <div class=profileTopBoarder v-for="index in this.profile">
+    //             <div class=pPhoto>
+    //               <img :src='index.IMG'>
+    //             </div>
+    //             <div class=extras>
+    //               <ul v-for="extra in index.extras">
+    //                 <li class="desc"><img :src='extra.img' class=imgClass>{{ extra.item }}</li>
+    //               </ul>
+    //             </div>
+    //             <div class=pTitle>
+    //               <div class=username>{{ index.username }}</div>
+    //               <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
+    //               <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+    //               <div class=divRow>
+    //                 <div class=divCol >
+    //                   <div class=sub_contain>
+    //                     <div class=subTitle>Here For...</div>
+    //                     <div class=desc>{{ index.desc }}</div>
+    //                   </div>
+    //                   <div class=sub_contain>
+    //                     <div class=subTitle>Hobbies & Interests</div>
+    //                     <div class=addBtn @click="open_popup('hob')">+Add</div>
+    //                     <div style="overflow: auto; position: relative; height: 100px" class=h_box>
+    //                       <ul v-for="hob in index.hob">
+    //                         <li class="desc">{{ hob }}</li>
+    //                       </ul>
+    //                     </div>
+    //                   </div>
+    //                 </div>
+    //                 <div class=divCol >
+    //                   <div class=subTitle>Mutual Connections</div>
+    //                   <div class=mutualConProfilePhotosBox>
+    //                     <div class=pPhoto_small>
+    //                       <div style="font-family: 'normal_def';">No Friends</div>
+    //                     </div>
+    //                   </div>
+    //
+    //                 </div>
+    //               </div>
+    //               <div class=greySubBackground>
+    //                 <div class="table_div2">
+    //                   <div>School Schedule</div>
+    //                   <div class=addBtn @click="open_popup('classes')">+Add</div>
+    //                   <div class="column_div2" v-for="item in index.classes">
+    //                     <div class=schd_box>
+    //                       <table>
+    //                         <tr>
+    //                           <th  style="text-align: center">Class</th>
+    //                           <th style="text-align: center">DOW</th>
+    //                           <th style="text-align: center">Start Time</th>
+    //                           <th style="text-align: center">End Time</th>
+    //                           <th style="text-align: center">Building</th>
+    //                         </tr>
+    //                         <tr>
+    //                           <td>{{ item.class }}</td>
+    //                           <td>
+    //                             <ul>
+    //                               <li style="display: inline-block;padding: 5px" v-for="thing in item.dow">{{thing}}</li>
+    //                             </ul>
+    //                           </td>
+    //                           <td>{{ item.startTime }}</td>
+    //                           <td>{{ item.endTime }}</td>
+    //                           <td>{{ item.building }}</td>
+    //                         </tr>
+    //                       </table>
+    //                     </div>
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           </div>
+    //
+    //           <div class="popup" v-if="this.hobbie_popup">
+    //             <div class=pop_up_text>
+    //               <div class = close @click="hobbie_popup = false">Close</div>
+    //               <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>
+    //             </div>
+    //             <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>
+    //           </div>
+    //
+    //           <div class="popup" v-if="this.classes_popup" style="top: 885px">
+    //             <div class=pop_up_text>
+    //               <div class = close @click="classes_popup = false">Close</div>
+    //               <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">
+    //               <div class = dofW>Monday</div>
+    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">
+    //               <div class = dofW>Tuesday</div>
+    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">
+    //               <div class = dofW>Wednesday</div>
+    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">
+    //               <div class = dofW>Thursday</div>
+    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">
+    //               <div class = dofW>Friday</div>
+    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">
+    //               <div class = dofW>Start Time:</div>
+    //               <input class="ptext" type="time" v-model="class_addition.start_time">
+    //               <div class = dofW>End Time:</div>
+    //               <input class="ptext" type="time" v-model="class_addition.end_time">
+    //               <div class = dofW>Building:</div>
+    //               <input class="ptext" type="text" v-model="class_addition.building">
+    //
+    //             </div>
+    //             <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>
+    //           </div>
+    //           </div>
+    //
+    //         `,
+    //     data(){
+    //         return {
+    //             profile:[],
+    //             hobbie_popup:false,
+    //             classes_popup:false,
+    //             hobbie_addition:'',
+    //             class_addition:{
+    //                 classname:'',
+    //                 days_of_week:{
+    //                     mon:false,
+    //                     tus:false,
+    //                     wed:false,
+    //                     thu:false,
+    //                     fri:false,
+    //                 },
+    //                 start_time:'',
+    //                 end_time:'',
+    //                 building:''
+    //             },
+    //             hNi:true
+    //
+    //         }
+    //     },
+    //     methods: {
+    //         signUp(){
+    //             // app.$root.$emit('signup_page');
+    //             app.$root.$emit('go_to_page',('sign_up'));
+    //         },
+    //         signIn(){
+    //             // app.$root.$emit('signin_page');
+    //             app.$root.$emit('go_to_page',('sign_in'));
+    //         },
+    //         open_popup(pop){
+    //             try{
+    //                 switch (pop) {
+    //                     case 'hob':
+    //                         this.hobbie_popup = true;
+    //                         break;
+    //                     case 'classes':
+    //                         this.classes_popup = true;
+    //                         break;
+    //                     default:
+    //                         break;
+    //
+    //                 }
+    //             }catch (e) {
+    //                 console.log(e.message)
+    //             }
+    //
+    //
+    //         },
+    //         add_hobbie(hobby){
+    //             if(diagnostic){console.log(hobby)}
+    //             app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
+    //             app.$root.$emit('update_db','Profile', 'hob', hobby); // sends to function to update db storage....
+    //         }, // after completing popup...
+    //         add_class(newClass){
+    //             if(diagnostic){console.log(newClass)}
+    //
+    //             let classObj = {
+    //                 class:newClass.classname,
+    //                 startTime:newClass.start_time,
+    //                 endTime:newClass.end_time,
+    //                 building:newClass.building,
+    //             };
+    //
+    //             let dowArray = [];
+    //
+    //             for (const day in newClass.days_of_week){
+    //                 if(newClass.days_of_week[day] === true){
+    //                     dowArray.push(day.toUpperCase());
+    //                 }
+    //             }
+    //
+    //             classObj['dow'] = dowArray;
+    //
+    //             if(diagnostic){console.log(classObj)}
+    //
+    //             app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
+    //             app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
+    //         }// after completing popup...
+    //     },
+    //     computed:{
+    //
+    //     },
+    //     mounted(){
+    //
+    //         this.$root.$on('populate_profile_first_time', (data)=>{
+    //
+    //             localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
+    //
+    //             this.profile.splice(0);
+    //
+    //             if(diagnostic) {console.log(data)}
+    //
+    //             let newObj = {
+    //                 username:`${data.fname} ${data.lname}`,
+    //                 on_campus: data.on_campus,
+    //                 IMG:data.photoPath,
+    //                 school:data.uni,
+    //                 job:data.job,
+    //                 degree:data.major,
+    //                 extras:[
+    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
+    //                     {item:`${data.major}`, img:'./photos/net.png'},
+    //                 ],
+    //                 hob:[],
+    //                 desc:data.desc,
+    //                 classes:[]
+    //             }
+    //
+    //             this.profile = [newObj];
+    //         })
+    //         this.$root.$on('populate_profile', (data)=>{
+    //
+    //             console.log(data)
+    //
+    //             localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
+    //
+    //             this.profile.splice(0);
+    //
+    //             if(diagnostic){console.log(data)}
+    //
+    //             let newObj = {
+    //                 username:`${data.fname} ${data.lname}`,
+    //                 on_campus: data.on_campus,
+    //                 IMG:data.photoPath,
+    //                 school:data.uni,
+    //                 job:data.job,
+    //                 degree:data.major,
+    //                 extras:[
+    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
+    //                     {item:`${data.major}`, img:'./photos/net.png'},
+    //                 ],
+    //                 hob:data.hob,
+    //                 desc:data.desc,
+    //                 classes:data.classes
+    //
+    //
+    //             }
+    //
+    //             this.profile = [newObj];
+    //
+    //         })
+    //         this.$root.$on('remove_popup', ()=>{
+    //
+    //             this.hobbie_popup = false;
+    //
+    //         })
+    //
+    //     }
+    // })
+
+
 
     let app = new Vue({
         el: '#vueApp',
@@ -1956,18 +2361,18 @@
             return {
                 starting_pages:
                     {
-                        state:true,
+                        state:false,
                         sub_state:{
-                            sign_in:true,
+                            sign_in:false,
                             sign_up:false,
                             forgot:false,
                         }
                     },
                 profile_pages:
                     {
-                        state:false,
+                        state:true,
                         sub_state:{
-                            chat:false,
+                            chat:true,
                             profile:false,
                             discovery:false,
                             other_profile:false
@@ -1982,66 +2387,23 @@
             updateBrowser(page, prop, data){
                 try{
                     switch (page) {
-                        case 'Profile': // profile page...
+                        case 'Profile': // profile page... (no cases needed as the values are simply pushed by a dynamic property...)
                             let past_user = localStorage.getItem('current_user'); // grab old user....
-                            if(past_user !== null){
-                                past_user = JSON.parse(past_user);
-                                console.log(past_user);
+                            if(past_user !== null){ // if user exists....
+                                past_user = JSON.parse(past_user); // parse the data....
+
+                                if(diagnostic){console.log(past_user);} // log user_data
 
 
-                                past_user[prop].push(data); // change data
+                                past_user[prop].push(data); // modify data
 
-                                localStorage.clear();
+                                localStorage.clear(); // clears the local storage
 
-                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
 
-                                app.$root.$emit('populate_profile', past_user); // populates profile.....
+                                app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
                                 app.$root.$emit('remove_popup'); // removes the popup...
 
-
-                                // try{
-                                //     switch (prop) {
-                                //         case 'hob':
-                                //             past_user[prop].push(data); // change data
-                                //             // past_user[prop] = [] // change data
-                                //
-                                //             localStorage.clear();
-                                //
-                                //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                //
-                                //             // location.reload();
-                                //
-                                //
-                                //
-                                //             app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                //             app.$root.$emit('remove_popup'); // removes the popup...
-                                //             break;
-                                //         case 'classes':
-                                //             past_user.classes.push()
-                                //             break;
-                                //         default:
-                                //             break;
-                                //
-                                //     }
-                                // }catch (e) {
-                                //     console.log(e.message)
-                                // }
-
-                                // past_user[prop].push(data); // change data
-                                // // past_user[prop] = [] // change data
-                                //
-                                // localStorage.clear();
-                                //
-                                // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                //
-                                // // location.reload();
-                                //
-                                //
-                                //
-                                // app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                // app.$root.$emit('remove_popup'); // removes the popup...
-
-                                // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
                             }
                             break;
                         case 'Chat': // chat page...
@@ -2054,7 +2416,7 @@
                     console.log(e.message)
                 }
             },
-            updateDB(page, prop, info){
+            updateDB(page, prop, data){
                 try{
                     switch (page) {
                         case 'Profile': // profile page...
@@ -2066,18 +2428,18 @@
                                             current_user = JSON.parse(current_user);
                                             console.log(current_user);
 
-                                            let data = JSON.stringify({
-                                                "interests": info,
+                                            let stuff = JSON.stringify({
+                                                "name": data,
                                             });
 
                                             let config = {
-                                                method: 'patch',
-                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                method: 'post',
+                                                url: 'http://198.74.61.26:8080/profile/addhobby/',
                                                 headers: {
                                                     'Authorization': `Token ${current_user.token}`,
                                                     'Content-Type': 'application/json'
                                                 },
-                                                data : data
+                                                data : stuff
                                             };
 
                                             axios(config)
@@ -2089,52 +2451,6 @@
                                                 .catch(function (error) {
                                                     console.log(error);
                                                 });
-
-
-
-                                            // try{
-                                            //     switch (prop) {
-                                            //         case 'hob':
-                                            //             past_user[prop].push(data); // change data
-                                            //             // past_user[prop] = [] // change data
-                                            //
-                                            //             localStorage.clear();
-                                            //
-                                            //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                            //
-                                            //             // location.reload();
-                                            //
-                                            //
-                                            //
-                                            //             app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                            //             app.$root.$emit('remove_popup'); // removes the popup...
-                                            //             break;
-                                            //         case 'classes':
-                                            //             past_user.classes.push()
-                                            //             break;
-                                            //         default:
-                                            //             break;
-                                            //
-                                            //     }
-                                            // }catch (e) {
-                                            //     console.log(e.message)
-                                            // }
-
-                                            // past_user[prop].push(data); // change data
-                                            // // past_user[prop] = [] // change data
-                                            //
-                                            // localStorage.clear();
-                                            //
-                                            // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                            //
-                                            // // location.reload();
-                                            //
-                                            //
-                                            //
-                                            // app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                            // app.$root.$emit('remove_popup'); // removes the popup...
-
-                                            // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
                                         }
                                         break;
                                     case 'classes': // classes...
@@ -2143,18 +2459,58 @@
                                             current_user = JSON.parse(current_user);
                                             console.log(current_user);
 
-                                            let data = JSON.stringify({
-                                                "interests": info,
+                                            console.log('schdle data????!')
+                                            console.log(data)
+
+                                            let states = {
+                                                MON:false,
+                                                TUS:false,
+                                                WED:false,
+                                                THU:false,
+                                                FRI:false,
+                                            };
+                                            
+                                            for(const item in data){
+
+                                                if(item === 'dow'){
+                                                    data[item].forEach(index=>{
+                                                        if(index === 'MON'){
+                                                            states['MON'] = true;
+                                                        }else if(index === 'TUS'){
+                                                            states['TUS'] = true;
+                                                        }else if(index === 'WED'){
+                                                            states['WED'] = true;
+                                                        }else if(index === 'THU'){
+                                                            states['THU'] = true;
+                                                        }else if(index === 'FRI'){
+                                                            states['FRI'] = true;
+                                                        }
+                                                    })
+                                                }
+                                            }
+
+                                            console.log(states);
+
+                                            let stuff = JSON.stringify({
+                                                "class_name": data.class,
+                                                "building": data.building,
+                                                "start_time": data.startTime,
+                                                "end_time": data.endTime,
+                                                "monday": states.MON,
+                                                "tuesday": states.TUS,
+                                                "wednesday": states.WED,
+                                                "thursday": states.THU,
+                                                "friday": states.FRI,
                                             });
 
                                             let config = {
-                                                method: 'patch',
-                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                method: 'post',
+                                                url: 'http://198.74.61.26:8080/profile/addclass/',
                                                 headers: {
                                                     'Authorization': `Token ${current_user.token}`,
                                                     'Content-Type': 'application/json'
                                                 },
-                                                data : data
+                                                data : stuff
                                             };
 
                                             axios(config)
@@ -2166,52 +2522,6 @@
                                                 .catch(function (error) {
                                                     console.log(error);
                                                 });
-
-
-
-                                            // try{
-                                            //     switch (prop) {
-                                            //         case 'hob':
-                                            //             past_user[prop].push(data); // change data
-                                            //             // past_user[prop] = [] // change data
-                                            //
-                                            //             localStorage.clear();
-                                            //
-                                            //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                            //
-                                            //             // location.reload();
-                                            //
-                                            //
-                                            //
-                                            //             app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                            //             app.$root.$emit('remove_popup'); // removes the popup...
-                                            //             break;
-                                            //         case 'classes':
-                                            //             past_user.classes.push()
-                                            //             break;
-                                            //         default:
-                                            //             break;
-                                            //
-                                            //     }
-                                            // }catch (e) {
-                                            //     console.log(e.message)
-                                            // }
-
-                                            // past_user[prop].push(data); // change data
-                                            // // past_user[prop] = [] // change data
-                                            //
-                                            // localStorage.clear();
-                                            //
-                                            // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                            //
-                                            // // location.reload();
-                                            //
-                                            //
-                                            //
-                                            // app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                            // app.$root.$emit('remove_popup'); // removes the popup...
-
-                                            // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
                                         }
                                         break;
                                     default:
@@ -2221,105 +2531,61 @@
                             }catch (e) {
                                 console.log(e.message)
                             }
-
-                            let myUser = localStorage.getItem('current_user'); // grab user....
-                            if(myUser !== null){
-                                myUser = JSON.parse(myUser);
-                                console.log(myUser);
-
-                                let data = JSON.stringify({
-                                    "about_me": user.desc,
-                                    "class_standing": user.cls,
-                                    "first_name": user.fname,
-                                    "last_name": user.lname,
-                                    // "interests": "",
-                                    "job": user.job,
-                                    "on_campus": user.on_campus,
-                                    "university": user.uni
-                                });
-
-                                let config = {
-                                    method: 'patch',
-                                    url: 'http://198.74.61.26:8080/profile/update/',
-                                    headers: {
-                                        'Authorization': `Token ${myUser.token}`,
-                                        'Content-Type': 'application/json'
-                                    },
-                                    data : data
-                                };
-
-                                axios(config)
-                                    .then(function (response) {
-
-                                        console.log(JSON.stringify(response.data));
-
-                                        localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
-
-                                        console.log('done'); // finished...
-
-                                        app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
-
-                                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
-
-                                    })
-                                    .catch(function (error) {
-                                        console.log(error);
-                                    });
-
-
-
-                                localStorage.clear();
-
-                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
-
-                                app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                app.$root.$emit('remove_popup'); // removes the popup...
-
-
-                                // try{
-                                //     switch (prop) {
-                                //         case 'hob':
-                                //             past_user[prop].push(data); // change data
-                                //             // past_user[prop] = [] // change data
-                                //
-                                //             localStorage.clear();
-                                //
-                                //             localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                //
-                                //             // location.reload();
-                                //
-                                //
-                                //
-                                //             app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                //             app.$root.$emit('remove_popup'); // removes the popup...
-                                //             break;
-                                //         case 'classes':
-                                //             past_user.classes.push()
-                                //             break;
-                                //         default:
-                                //             break;
-                                //
-                                //     }
-                                // }catch (e) {
-                                //     console.log(e.message)
-                                // }
-
-                                // past_user[prop].push(data); // change data
-                                // // past_user[prop] = [] // change data
-                                //
-                                // localStorage.clear();
-                                //
-                                // localStorage.setItem('user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                                //
-                                // // location.reload();
-                                //
-                                //
-                                //
-                                // app.$root.$emit('populate_profile', past_user); // populates profile.....
-                                // app.$root.$emit('remove_popup'); // removes the popup...
-
-                                // app.$root.$emit('go_to_page',('Profile')); // opens the profile page.....
-                            }
+                            //
+                            // let myUser = localStorage.getItem('current_user'); // grab user....
+                            // if(myUser !== null){
+                            //     myUser = JSON.parse(myUser);
+                            //     console.log(myUser);
+                            //
+                            //     let data = JSON.stringify({
+                            //         "about_me": myUser.desc,
+                            //         "class_standing": myUser.cls,
+                            //         "first_name": myUser.fname,
+                            //         "last_name": myUser.lname,
+                            //         // "interests": "",
+                            //         "job": myUser.job,
+                            //         "on_campus": myUser.on_campus,
+                            //         "university": myUser.uni
+                            //     });
+                            //
+                            //     let config = {
+                            //         method: 'patch',
+                            //         url: 'http://198.74.61.26:8080/profile/update/',
+                            //         headers: {
+                            //             'Authorization': `Token ${myUser.token}`,
+                            //             'Content-Type': 'application/json'
+                            //         },
+                            //         data : data
+                            //     };
+                            //
+                            //     axios(config)
+                            //         .then(function (response) {
+                            //
+                            //             console.log(JSON.stringify(response.data));
+                            //
+                            //             localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+                            //
+                            //             console.log('done'); // finished...
+                            //
+                            //             app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
+                            //
+                            //             app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+                            //
+                            //         })
+                            //         .catch(function (error) {
+                            //             console.log(error);
+                            //         });
+                            //
+                            //
+                            //
+                            //     localStorage.clear();
+                            //
+                            //     localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
+                            //
+                            //     app.$root.$emit('populate_profile', past_user); // populates profile.....
+                            //     app.$root.$emit('remove_popup'); // removes the popup...
+                            //
+                            // }
                             break;
                         case 'Chat': // chat page...
                             break;
@@ -2330,57 +2596,14 @@
                 }catch (e) {
                     console.log(e.message)
                 }
+            },
+            getCurrentUser(){
+                // current_user = localStorage.getItem('current_user'); // grab user....
+                // current_user = JSON.parse(current_user);
+                // console.log(current_user);
             }
         },
         mounted(){
-            // this.$root.$on('signup_page',()=>{ // show sign_up
-            //
-            //     this.starting_pages.state = true; // starting pages state
-            //
-            //     this.starting_pages.sub_state.sign_in = false; // sign in
-            //     this.starting_pages.sub_state.sign_up = true; // sign up
-            //     this.starting_pages.sub_state.forgot = false; // forgot
-            //
-            //     this.profile_pages.state = false; // profile pages state
-            //
-            //     this.profile_pages.sub_state.chat = false; // chat
-            //     this.profile_pages.sub_state.profile = false; // profile
-            //     this.profile_pages.sub_state.home = false; // home
-            //     this.profile_pages.sub_state.discovery = false; // discovery
-            //
-            // })
-            // this.$root.$on('signin_page',()=>{ // show sign in
-            //
-            //     this.starting_pages.state = true; // starting pages state
-            //
-            //     this.starting_pages.sub_state.sign_in = true; // sign in
-            //     this.starting_pages.sub_state.sign_up = false; // sign up
-            //     this.starting_pages.sub_state.forgot = false; // forgot
-            //
-            //     this.profile_pages.state = false; // profile pages state
-            //
-            //     this.profile_pages.sub_state.chat = false; // chat
-            //     this.profile_pages.sub_state.profile = false; // profile
-            //     this.profile_pages.sub_state.home = false; // home
-            //     this.profile_pages.sub_state.discovery = false; // discovery
-            //
-            // })
-            // this.$root.$on('forgot',()=>{
-            //
-            //     this.starting_pages.state = true; // starting pages state
-            //
-            //     this.starting_pages.sub_state.sign_in = false; // sign in
-            //     this.starting_pages.sub_state.sign_up = false; // sign up
-            //     this.starting_pages.sub_state.forgot = true; // forgot
-            //
-            //     this.profile_pages.state = false; // profile pages state
-            //
-            //     this.profile_pages.sub_state.chat = false; // chat
-            //     this.profile_pages.sub_state.profile = false; // profile
-            //     this.profile_pages.sub_state.home = false; // home
-            //     this.profile_pages.sub_state.discovery = false; // discovery
-            //
-            // })
             this.$root.$on('go_to_page',(page)=>{
 
                 try{
@@ -2509,28 +2732,13 @@
                 }
 
             })
-
-            // this.$root.$on('sign_in_to_profile',()=>{ // opens to profile page...
-            //
-            //     this.starting_pages.state = false; // starting pages state
-            //
-            //     this.starting_pages.sub_state.sign_in = false; // sign in
-            //     this.starting_pages.sub_state.sign_up = false; // sign up
-            //     this.starting_pages.sub_state.forgot = false; // forgot
-            //
-            //     this.profile_pages.state = true; // profile pages state
-            //
-            //     this.profile_pages.sub_state.chat = false; // chat
-            //     this.profile_pages.sub_state.profile = true; // profile
-            //     this.profile_pages.sub_state.home = false; // home
-            //     this.profile_pages.sub_state.discovery = false; // discovery
-            //
-            //
-            //
-            // })
             this.$root.$on('upload',()=>{ // upload start
                 document.getElementById('photo_upload').click();
             })
+
+
+
+
             this.$root.$on('update_browser',(page, prop, data)=>{ // upload start
                 this.updateBrowser(page, prop, data);
 
@@ -2644,7 +2852,7 @@
                     })
             };
             fileReader.readAsArrayBuffer(file)
-            // $("#photo_upload")[0].value = '';
+            $("#photo_upload")[0].value = '';
         }else{
             console.log(`file undefined`);
         }

@@ -16,9 +16,17 @@ let log                                      = new Log(); // new instance of Log
 log.init(appName, '1.0.0'); // log config
 
 
+
+
 const { Pool, Client } = require("pg");
 const path = require("path");
 const fs = require("fs");
+
+
+
+
+let privateKey = fs.readFileSync( '/etc/letsencrypt/live/csi4999.dragonflare.xyz/privkey.pem' );
+let certificate = fs.readFileSync( '/etc/letsencrypt/live/csi4999.dragonflare.xyz/fullchain.pem' );
 
 const credentials = {
     user: "csi4999db",
@@ -31,21 +39,6 @@ const credentials = {
 let profilePhotoFileName;
 
 let personal_io;
-
-
-// CREATE TABLE users (
-//     id serial PRIMARY KEY,
-//     email VARCHAR ( 255 ) UNIQUE NOT NULL,
-//     school VARCHAR ( 50 ),
-//     major VARCHAR ( 90 ),
-//     class_standing VARCHAR ( 20 ),
-//     first_name VARCHAR ( 30 ),
-//     last_name VARCHAR ( 30 ),
-//     description VARCHAR ( 250 ),
-//     photopath varchar (250),
-//     job varchar (50)
-// );
-
 
 
 async function getAllUsers() {
@@ -118,27 +111,6 @@ const insertUser = async (email, school, major, class_standing, first_name, last
         await client.end();               // closes connection
     }
 }; // inserts a user into the user table of the db.....
-// const showAllTables = async () => {
-//     try {
-//         await client.connect();           // gets connection
-//         await client.query(`\\dt`); // sends queries
-//         return true;
-//     } catch (error) {
-//         console.error(error.stack);
-//         return false;
-//     } finally {
-//         await client.end();               // closes connection
-//     }
-// }; // inserts a user into the user table of the db.....
-
-// async function getAllChats() {
-//     const client = new Client(credentials);
-//     await client.connect();
-//     const now = await client.query("SHOW * tables");
-//     await client.end();
-//
-//     return now;
-// }
 
 // (async () => {
 //
@@ -147,17 +119,7 @@ const insertUser = async (email, school, major, class_standing, first_name, last
 //     console.log(users.rows);
 //     console.log('done');
 //
-//     // const res2 = await insertUser('lenny.test@gmail.com', 'Oakland University','IT','Senior','Lenny', 'Cassen','I am testing an insert statment...', 'photos/nice.gif','IT' );
-//     // console.log(res2.rows);
-//     // console.log('done');
 //
-//     // const users = await getAllUsers();
-//     // console.log(users.rows);
-//     // console.log('done');
-//
-//     // const show_all = await showAllTables();
-//     // console.log(show_all);
-//     // console.log('done');
 //
 //
 //
@@ -195,6 +157,10 @@ let fileStorage_user = multer.diskStorage(
     }
 );
 const userObj = multer( { storage: fileStorage_user } );
+
+
+// let app                                     = require("express")();
+// let http                                    = require("http").Server(app);
 
 
 server = app.listen(portNum, function () {
