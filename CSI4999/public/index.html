@@ -537,7 +537,7 @@
             left: 50%;
             transform: translate(-50%,0);
             top: 100px;
-            height: 80%;
+            height: 90%;
             width: 97%;
             background-color: #f7f7f7;
             overflow: auto;
@@ -815,6 +815,34 @@
             transform: translate(-50%,0);
 
         }
+        .addBtn2{
+            position: relative;
+            background-color: #1c71aa;
+            color: white;
+            font-family: normal_def;
+            font-size: 1em;
+            text-align: center;
+            height: auto;
+            line-height: 25px;
+            width: 75px;
+            border-radius: 25px;
+            padding: 2px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            left: 50%;
+            transform: translate(-50%,0);
+            top: 72px;
+
+        }
+
+        .addBtn2:hover{
+            cursor: pointer;
+            background-color: #0d5280;
+        }
+
+        .addBtn2:active{
+            transform: translate(-50%,2px);
+        }
 
         .addBtn:hover{
             cursor: pointer;
@@ -837,16 +865,11 @@
             border-radius: 15px;
             /*overflow: auto;*/
         }
-        /*.hobbiePopup{*/
-        /*    position: absolute;*/
-        /*    left: 50%;*/
-        /*    top: 50%;*/
-        /*    transform: translate(-50%,-50%);*/
-        /*    height: 200px;*/
-        /*    width: 500px;*/
-        /*    background-color: #0c486e;*/
-        /*    border-radius: 25px;*/
-        /*}*/
+
+        .popup2{
+            position: absolute;height: 200px; width: 500px; background-color: #0c476d; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 25px;
+        }
+
 
         .pop_up_text{
             position: relative;
@@ -888,11 +911,12 @@
             top: 15px;
             right: 15px;
             height: 25px;
-            width: auto;
+            width: 45px;
             background-color: #5e5e5e;
             border-radius: 15px;
             padding: 5px;
             color: white;
+            font-family: normal_def;
 
         }
 
@@ -1015,6 +1039,42 @@
             right: 130px;
         }
 
+        .tt{
+
+            position: relative;
+            display: inline-block;
+            padding: 5px;
+            /* margin: -2px; */
+            height: 45px;
+            line-height: 45px
+        }
+
+        /*.tt{*/
+        /*    position: relative;*/
+        /*    top: 50%;*/
+        /*    transform: translate(0,-50%);*/
+        /*}*/
+
+
+        .table_div_nav{
+            position: absolute;
+            width: 310px;
+            height: 100%;
+            border: none;
+            left: 50%;
+            transform: translate(-50%,0);
+            /*border: solid white;*/
+        }
+
+        .column_div_nav{
+            position: relative;
+            display: inline-block;
+            width: 40%;
+            height: 100%;
+            text-align: center;
+        }
+
+
 
 
 
@@ -1103,6 +1163,9 @@
                     <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item.name}}</li>
                   </ul>
                   <img src="photos/acorn2.png" class = iconz>
+
+
+
                   <div class = nav_switch>
                     <label class="switch" id = nav_switch>
                       <input type="checkbox">
@@ -1111,7 +1174,6 @@
                   </div>
                 </nav>
               </div>
-
             `,
         data(){
             return {
@@ -1736,7 +1798,7 @@
                 <div class = main_contain>
                   <div class = table_div>
                     <div class = column_div style="width: 15%"><div class = sidebar>
-                      <div class = add_tab>Add</div>
+                      <div class=addBtn2 @click="open_popup('add_chat_tab')">+Add</div>
                       <div class = chatTab  v-for="index in this.chat" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }" >
                         <div class = otherPerson @click="populateChatWindow(index)">{{index.otherPerson}}</div>
                       </div>
@@ -1753,7 +1815,7 @@
                           <div class = table_div_chat>
 
                             <div class = column_div_chat style="width: 90%;">
-                              <input type="text" class = userIn v-model="inputText">
+                              <input type="text" class = userIn v-model="inputText2">
                             </div>
 
                             <div class = column_div_chat style="width: 8%;">
@@ -1768,6 +1830,19 @@
                   </div>
                 </div>
               </div>
+
+              <div class = popup2 v-if="add_chat_tab">
+                <div>
+                  <input type="text" class="itext" placeholder="email" style="top: 75px">
+                </div>
+
+                <div class = addBtn style="position:absolute; width: 120px; bottom: 10px" @click="create_chat_tab(inputText2)">Create Chat</div>
+
+                <div class = close @click="add_chat_tab = false">Close</div>
+
+              </div>
+
+
               </div>
 
             `,
@@ -1820,8 +1895,9 @@
                 chatWindowArray:[
 
                 ],
-                inputText:'',
-                hold:''
+                inputText2:'',
+                hold:'',
+                add_chat_tab:false
 
             }
         },
@@ -1858,6 +1934,60 @@
             activate(name) {
                 this.hold = name;
             },
+            open_popup(pop){
+                try{
+                    switch (pop) {
+                        case 'add_chat_tab':
+                            this.add_chat_tab = true;
+                            break;
+                        default:
+                            break;
+
+                    }
+                }catch (e) {
+                    console.log(e.message)
+                }
+
+
+            },
+            create_chat_tab(person_to_chat_with){
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+                let stuff = JSON.stringify({username: person_to_chat_with});
+
+                let config = {
+                    method: 'get',
+                    url: 'http://198.74.61.26/messages/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : stuff
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(response.data);
+
+                        // app.$root.$emit('populate_profile_other', response.data);
+
+                        // app.$root.$emit('go_to_page', ('other_profile'));
+
+
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    // this.inputText = '';
+                    // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                    // this.inputText = '';
+
+                });
+
+            }
         },
         computed:{
 
@@ -1910,7 +2040,6 @@
                             </div>
                             <div class=sub_contain>
                               <div class=subTitle>Hobbies & Interests</div>
-<!--                              <div class=addBtn @click="open_popup('hob')">+Add</div>-->
                               <div style="overflow: auto; position: relative; height: 100px" class=h_box>
                                 <ul v-for="hob in index.hob">
                                   <li class="desc">{{ hob }}</li>
@@ -1925,13 +2054,11 @@
                                 <div style="font-family: 'normal_def';">No Friends</div>
                               </div>
                             </div>
-
                           </div>
                         </div>
                         <div class=greySubBackground>
                           <div class="table_div2">
                             <div>School Schedule</div>
-<!--                            <div class=addBtn @click="open_popup('classes')">+Add</div>-->
                             <div class="column_div2" v-for="item in index.classes">
                               <div class=schd_box>
                                 <table>
@@ -1960,39 +2087,38 @@
                         </div>
                       </div>
                     </div>
+                    <div class="popup" v-if="this.hobbie_popup">
+                      <div class=pop_up_text>
+                        <div class = close @click="hobbie_popup = false">Close</div>
+                        <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>
+                      </div>
+                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>
+                    </div>
 
-<!--                    <div class="popup" v-if="this.hobbie_popup">-->
-<!--                      <div class=pop_up_text>-->
-<!--                        <div class = close @click="hobbie_popup = false">Close</div>-->
-<!--                        <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>-->
-<!--                      </div>-->
-<!--                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>-->
-<!--                    </div>-->
+                    <div class="popup" v-if="this.classes_popup" style="top: 885px">
+                      <div class=pop_up_text>
+                        <div class = close @click="classes_popup = false">Close</div>
+                        <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">
+                        <div class = dofW>Monday</div>
+                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">
+                        <div class = dofW>Tuesday</div>
+                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">
+                        <div class = dofW>Wednesday</div>
+                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">
+                        <div class = dofW>Thursday</div>
+                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">
+                        <div class = dofW>Friday</div>
+                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">
+                        <div class = dofW>Start Time:</div>
+                        <input class="ptext" type="time" v-model="class_addition.start_time">
+                        <div class = dofW>End Time:</div>
+                        <input class="ptext" type="time" v-model="class_addition.end_time">
+                        <div class = dofW>Building:</div>
+                        <input class="ptext" type="text" v-model="class_addition.building">
 
-<!--                    <div class="popup" v-if="this.classes_popup" style="top: 885px">-->
-<!--                      <div class=pop_up_text>-->
-<!--                        <div class = close @click="classes_popup = false">Close</div>-->
-<!--                        <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">-->
-<!--                        <div class = dofW>Monday</div>-->
-<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">-->
-<!--                        <div class = dofW>Tuesday</div>-->
-<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">-->
-<!--                        <div class = dofW>Wednesday</div>-->
-<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">-->
-<!--                        <div class = dofW>Thursday</div>-->
-<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">-->
-<!--                        <div class = dofW>Friday</div>-->
-<!--                        <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">-->
-<!--                        <div class = dofW>Start Time:</div>-->
-<!--                        <input class="ptext" type="time" v-model="class_addition.start_time">-->
-<!--                        <div class = dofW>End Time:</div>-->
-<!--                        <input class="ptext" type="time" v-model="class_addition.end_time">-->
-<!--                        <div class = dofW>Building:</div>-->
-<!--                        <input class="ptext" type="text" v-model="class_addition.building">-->
-
-<!--                      </div>-->
-<!--                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>-->
-<!--                    </div>-->
+                      </div>
+                      <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2034,16 +2160,12 @@
 
                         app.$root.$emit('populate_profile_other', response.data);
 
-                        // app.$root.$emit('go_to_page', ('other_profile'));
-
 
 
                     }).catch(function (error) {
                         console.log(error);
                     this.inputText = '';
                         alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
-                        // this.inputText = '';
-
                     });
 
 
@@ -2055,9 +2177,42 @@
 
         },
         mounted(){
-            this.$root.$on('populate_profile_other', (data)=>{
+            this.$root.$on('populate_profile_other', (data)=>{ // always from db....
 
-                console.log(data);
+              let final_array = [];
+
+                data.class_schedules.forEach(schedule=>{
+                    let dowArray = [];
+                    let newDow = {
+                        MON:schedule.monday,
+                        TUS:schedule.tuesday,
+                        WED:schedule.wednesday,
+                        THU:schedule.thursday,
+                        FRI:schedule.friday,
+                    }
+
+                    for (const day in newDow){
+                        if(newDow[day] === true){
+                            dowArray.push(day.toUpperCase());
+                        }
+                    }
+
+                    let convertedScedule = {
+                        building:schedule.building,
+                        class:schedule.class_name,
+                        endTime:schedule.end_time,
+                        startTime:schedule.start_time,
+                        dow:dowArray
+                    }
+
+                    final_array.push(convertedScedule);
+
+
+
+                })
+
+
+                console.log(final_array);
 
                 this.other_profile.splice(0);
 
@@ -2076,7 +2231,7 @@
                     ],
                     hob:data.interests,
                     desc:data.about_me,
-                    classes:data.class_schedules
+                    classes:final_array
 
 
                 }
@@ -2361,18 +2516,18 @@
             return {
                 starting_pages:
                     {
-                        state:false,
+                        state:true,
                         sub_state:{
-                            sign_in:false,
+                            sign_in:true,
                             sign_up:false,
                             forgot:false,
                         }
                     },
                 profile_pages:
                     {
-                        state:true,
+                        state:false,
                         sub_state:{
-                            chat:true,
+                            chat:false,
                             profile:false,
                             discovery:false,
                             other_profile:false
@@ -2517,6 +2672,7 @@
                                                 .then(function (response) {
 
                                                     console.log(JSON.stringify(response.data));
+                                                    alert(`Schedule Updated!`)
 
                                                 })
                                                 .catch(function (error) {
