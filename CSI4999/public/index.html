@@ -1192,49 +1192,6 @@
         methods: {
             goToPage(page){
                 app.$root.$emit('go_to_page', page.val); //changes the page to the one the user clicks....
-            },
-            toggle_show_schedule(value){
-
-
-                current_user = localStorage.getItem('current_user'); // grab user....
-                current_user = JSON.parse(current_user);
-                console.log(current_user);
-
-                let data = JSON.stringify({
-                    "show_schedule": value
-                });
-
-                let config = {
-                    method: 'patch',
-                    url: 'http://198.74.61.26:8080/profile/update/',
-                    headers: {
-                        'Authorization': `Token ${current_user.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    data : data
-                };
-
-                axios(config)
-                    .then(function (response) {
-
-                        console.log(JSON.stringify(response.data));
-
-                        current_user['show_schedule'] = value;
-
-                        localStorage.clear();
-
-                        localStorage.setItem('current_user', JSON.stringify(current_user)); // saves user to browser's local storage....
-
-                        console.log('done'); // finished...
-
-                        app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
-
-                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
-
-                    }).catch(function (error) {
-                    console.log(error);
-                });
-
             }
         },
         computed:{
@@ -1614,10 +1571,10 @@
                   <div class=greySubBackground>
                     <div class = nav_switch>
                       <div>Schedule View</div>
-                     <div><label class="switch" id = nav_switch><input type="checkbox" v-model="toggleGuy" @change="toggle_show_schedule(!toggleGuy)"><span class="slider round"></span></label>
+                     <div><label class="switch" id = nav_switch><input type="checkbox" v-model="toggleGuy" @change="toggle_show_schedule(toggleGuy)"><span class="slider round"></span></label>
                      </div>
                     </div>
-                    <div class="table_div2">
+                    <div class="table_div2" v-show="toggleGuy">
                       <div>School Schedule</div>
                       <div class=addBtn @click="open_popup('classes')">+Add</div>
                       <div class="column_div2" v-for="item in index.classes">
@@ -1765,7 +1722,54 @@
 
                 app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
                 app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
-            }// after completing popup...
+            }, // after completing popup...
+            toggle_show_schedule(value){
+
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+                let data = JSON.stringify({
+                    "show_schedule": value
+                });
+
+                let config = {
+                    method: 'patch',
+                    url: 'http://198.74.61.26:8080/profile/update/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : data
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(JSON.stringify(response.data));
+
+                        current_user['show_schedule'] = value;
+
+                        console.log('here45')
+                        console.log(current_user)
+
+                        localStorage.clear();
+
+                        localStorage.setItem('current_user', JSON.stringify(current_user)); // saves user to browser's local storage....
+
+                        console.log('done'); // finished...
+
+                        app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
+
+                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                        this.toggleGuy = !this.toggleGuy;
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
+            }
         },
         computed:{
 
@@ -1795,6 +1799,8 @@
                     desc:data.desc,
                     classes:[]
                 }
+
+                this.toggleGuy = data.show_schedule;
 
                 this.profile = [newObj];
             })
@@ -1826,6 +1832,8 @@
 
                 }
 
+                this.toggleGuy = data.show_schedule;
+
                 this.profile = [newObj];
 
             })
@@ -1846,7 +1854,7 @@
                   <div class = table_div>
                     <div class = column_div style="width: 15%"><div class = sidebar>
                       <div class=addBtn2 @click="open_popup('add_chat_tab')">+Add</div>
-                      <div class = chatTab  v-for="index in this.chat" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }" >
+                      <div class = chatTab  v-for="index in this.chats" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }" >
                         <div class = otherPerson @click="populateChatWindow(index)">{{index.otherPerson}}</div>
                       </div>
                     </div>
@@ -1895,7 +1903,7 @@
             `,
         data(){
             return {
-                chat:[
+                chats:[
                     {
                         otherPerson:'Rick Sanchez',
                         chat:[
@@ -2007,7 +2015,7 @@
 
                 let config = {
                     method: 'post',
-                    url: 'http://198.74.61.26:8080/messages/',
+                    url: 'http://198.74.61.26:8080/messages/read/',
                     headers: {
                         'Authorization': `Token ${current_user.token}`,
                         'Content-Type': 'application/json'
@@ -2020,7 +2028,16 @@
 
                         console.log(response.data);
 
-                        // app.$root.$emit('populate_profile_other', response.data);
+                        if(response.data.length === 0){
+                            //create a new chat....
+
+                            app.$root.$emit('populate_blank_chat',person_to_chat_with);
+                        }else{
+                            //open old chat....
+
+                            app.$root.$emit('populate_chat', response.data, person_to_chat_with);
+                        }
+
 
                         // app.$root.$emit('go_to_page', ('other_profile'));
 
@@ -2040,6 +2057,12 @@
 
         },
         mounted(){
+            app.$root.$on('populate_blank_chat',(person)=>{
+                this.chats.push({
+                    otherPerson:person,
+                    chat:[]
+                })
+            })
 
         }
     })
