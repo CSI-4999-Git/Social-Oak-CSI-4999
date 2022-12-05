@@ -1030,13 +1030,20 @@
             border-radius: 50%;
         }
 
+        /*.nav_switch{*/
+        /*    position: absolute;*/
+        /*!* float: left; *!*/
+        /*!* display: inline-block; *!*/
+        /*    top: 50%;*/
+        /*    transform: translate(0, -49%);*/
+        /*    right: 130px;*/
+        /*}*/
+
         .nav_switch{
             position: absolute;
-        /* float: left; */
-        /* display: inline-block; */
-            top: 50%;
-            transform: translate(0, -49%);
-            right: 130px;
+            transform: translate(-50%,0);
+            left: 50%;
+            top: -105px;
         }
 
         .tt{
@@ -1163,15 +1170,6 @@
                     <li v-for="item in index" class = li_nav @click="goToPage(item)">{{item.name}}</li>
                   </ul>
                   <img src="photos/acorn2.png" class = iconz>
-
-
-
-                  <div class = nav_switch>
-                    <label class="switch" id = nav_switch>
-                      <input type="checkbox">
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
                 </nav>
               </div>
             `,
@@ -1186,13 +1184,57 @@
                         {name:'Chat', val:'chat'},
 
                     ]
-                ]
+                ],
+                toggleGuy:true
 
             }
         },
         methods: {
             goToPage(page){
                 app.$root.$emit('go_to_page', page.val); //changes the page to the one the user clicks....
+            },
+            toggle_show_schedule(value){
+
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+                let data = JSON.stringify({
+                    "show_schedule": value
+                });
+
+                let config = {
+                    method: 'patch',
+                    url: 'http://198.74.61.26:8080/profile/update/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : data
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(JSON.stringify(response.data));
+
+                        current_user['show_schedule'] = value;
+
+                        localStorage.clear();
+
+                        localStorage.setItem('current_user', JSON.stringify(current_user)); // saves user to browser's local storage....
+
+                        console.log('done'); // finished...
+
+                        app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
+
+                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
             }
         },
         computed:{
@@ -1369,6 +1411,7 @@
                     desc:'',
                     job:'',
                     on_campus:false,
+                    show_schedule:true,
                     classes:[]
                 },
                 forSql:{},
@@ -1411,6 +1454,7 @@
                                 // "interests": "",
                                 "job": user.job,
                                 "on_campus": user.on_campus,
+                                "show_schedule": user.show_schedule,
                                 "university": user.uni,
                                 "avatar": user.photoPath,
                                 "major": user.major
@@ -1439,8 +1483,7 @@
 
                                     app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
 
-                                })
-                                .catch(function (error) {
+                                }).catch(function (error) {
                                     console.log(error);
                                 });
 
@@ -1448,8 +1491,7 @@
                         } else {
                             // alert('Account creation unsuccessful!');
                         }
-                    })
-                    .catch(error => {
+                    }).catch(error => {
                         console.log(error.response);
                     });
 
@@ -1567,10 +1609,14 @@
                           <div style="font-family: 'normal_def';">No Friends</div>
                         </div>
                       </div>
-
                     </div>
                   </div>
                   <div class=greySubBackground>
+                    <div class = nav_switch>
+                      <div>Schedule View</div>
+                     <div><label class="switch" id = nav_switch><input type="checkbox" v-model="toggleGuy" @change="toggle_show_schedule(!toggleGuy)"><span class="slider round"></span></label>
+                     </div>
+                    </div>
                     <div class="table_div2">
                       <div>School Schedule</div>
                       <div class=addBtn @click="open_popup('classes')">+Add</div>
@@ -1657,7 +1703,8 @@
                     end_time:'',
                     building:''
                 },
-                hNi:true
+                hNi:true,
+                toggleGuy:true
 
             }
         },
@@ -1959,8 +2006,8 @@
                 let stuff = JSON.stringify({username: person_to_chat_with});
 
                 let config = {
-                    method: 'get',
-                    url: 'http://198.74.61.26/messages/',
+                    method: 'post',
+                    url: 'http://198.74.61.26:8080/messages/',
                     headers: {
                         'Authorization': `Token ${current_user.token}`,
                         'Content-Type': 'application/json'
@@ -2244,269 +2291,6 @@
         }
     })
 
-    // Vue.component('other_profile', {
-    //     template:
-    //         `
-    //           <div>
-    //           <div class=profileTopBoarder v-for="index in this.profile">
-    //             <div class=pPhoto>
-    //               <img :src='index.IMG'>
-    //             </div>
-    //             <div class=extras>
-    //               <ul v-for="extra in index.extras">
-    //                 <li class="desc"><img :src='extra.img' class=imgClass>{{ extra.item }}</li>
-    //               </ul>
-    //             </div>
-    //             <div class=pTitle>
-    //               <div class=username>{{ index.username }}</div>
-    //               <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
-    //               <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
-    //               <div class=divRow>
-    //                 <div class=divCol >
-    //                   <div class=sub_contain>
-    //                     <div class=subTitle>Here For...</div>
-    //                     <div class=desc>{{ index.desc }}</div>
-    //                   </div>
-    //                   <div class=sub_contain>
-    //                     <div class=subTitle>Hobbies & Interests</div>
-    //                     <div class=addBtn @click="open_popup('hob')">+Add</div>
-    //                     <div style="overflow: auto; position: relative; height: 100px" class=h_box>
-    //                       <ul v-for="hob in index.hob">
-    //                         <li class="desc">{{ hob }}</li>
-    //                       </ul>
-    //                     </div>
-    //                   </div>
-    //                 </div>
-    //                 <div class=divCol >
-    //                   <div class=subTitle>Mutual Connections</div>
-    //                   <div class=mutualConProfilePhotosBox>
-    //                     <div class=pPhoto_small>
-    //                       <div style="font-family: 'normal_def';">No Friends</div>
-    //                     </div>
-    //                   </div>
-    //
-    //                 </div>
-    //               </div>
-    //               <div class=greySubBackground>
-    //                 <div class="table_div2">
-    //                   <div>School Schedule</div>
-    //                   <div class=addBtn @click="open_popup('classes')">+Add</div>
-    //                   <div class="column_div2" v-for="item in index.classes">
-    //                     <div class=schd_box>
-    //                       <table>
-    //                         <tr>
-    //                           <th  style="text-align: center">Class</th>
-    //                           <th style="text-align: center">DOW</th>
-    //                           <th style="text-align: center">Start Time</th>
-    //                           <th style="text-align: center">End Time</th>
-    //                           <th style="text-align: center">Building</th>
-    //                         </tr>
-    //                         <tr>
-    //                           <td>{{ item.class }}</td>
-    //                           <td>
-    //                             <ul>
-    //                               <li style="display: inline-block;padding: 5px" v-for="thing in item.dow">{{thing}}</li>
-    //                             </ul>
-    //                           </td>
-    //                           <td>{{ item.startTime }}</td>
-    //                           <td>{{ item.endTime }}</td>
-    //                           <td>{{ item.building }}</td>
-    //                         </tr>
-    //                       </table>
-    //                     </div>
-    //                   </div>
-    //                 </div>
-    //               </div>
-    //             </div>
-    //           </div>
-    //
-    //           <div class="popup" v-if="this.hobbie_popup">
-    //             <div class=pop_up_text>
-    //               <div class = close @click="hobbie_popup = false">Close</div>
-    //               <div class=text style="font-size: 1.3em">Hobby:<input class="itext" type="text" v-model="this.hobbie_addition"></div>
-    //             </div>
-    //             <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>
-    //           </div>
-    //
-    //           <div class="popup" v-if="this.classes_popup" style="top: 885px">
-    //             <div class=pop_up_text>
-    //               <div class = close @click="classes_popup = false">Close</div>
-    //               <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">
-    //               <div class = dofW>Monday</div>
-    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.mon">
-    //               <div class = dofW>Tuesday</div>
-    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.tus">
-    //               <div class = dofW>Wednesday</div>
-    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.wed">
-    //               <div class = dofW>Thursday</div>
-    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.thu">
-    //               <div class = dofW>Friday</div>
-    //               <input class="ptext" type="checkbox" v-model="class_addition.days_of_week.fri">
-    //               <div class = dofW>Start Time:</div>
-    //               <input class="ptext" type="time" v-model="class_addition.start_time">
-    //               <div class = dofW>End Time:</div>
-    //               <input class="ptext" type="time" v-model="class_addition.end_time">
-    //               <div class = dofW>Building:</div>
-    //               <input class="ptext" type="text" v-model="class_addition.building">
-    //
-    //             </div>
-    //             <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_class(class_addition)">Add</div>
-    //           </div>
-    //           </div>
-    //
-    //         `,
-    //     data(){
-    //         return {
-    //             profile:[],
-    //             hobbie_popup:false,
-    //             classes_popup:false,
-    //             hobbie_addition:'',
-    //             class_addition:{
-    //                 classname:'',
-    //                 days_of_week:{
-    //                     mon:false,
-    //                     tus:false,
-    //                     wed:false,
-    //                     thu:false,
-    //                     fri:false,
-    //                 },
-    //                 start_time:'',
-    //                 end_time:'',
-    //                 building:''
-    //             },
-    //             hNi:true
-    //
-    //         }
-    //     },
-    //     methods: {
-    //         signUp(){
-    //             // app.$root.$emit('signup_page');
-    //             app.$root.$emit('go_to_page',('sign_up'));
-    //         },
-    //         signIn(){
-    //             // app.$root.$emit('signin_page');
-    //             app.$root.$emit('go_to_page',('sign_in'));
-    //         },
-    //         open_popup(pop){
-    //             try{
-    //                 switch (pop) {
-    //                     case 'hob':
-    //                         this.hobbie_popup = true;
-    //                         break;
-    //                     case 'classes':
-    //                         this.classes_popup = true;
-    //                         break;
-    //                     default:
-    //                         break;
-    //
-    //                 }
-    //             }catch (e) {
-    //                 console.log(e.message)
-    //             }
-    //
-    //
-    //         },
-    //         add_hobbie(hobby){
-    //             if(diagnostic){console.log(hobby)}
-    //             app.$root.$emit('update_browser','Profile', 'hob', hobby); // sends to function to update browser storage....
-    //             app.$root.$emit('update_db','Profile', 'hob', hobby); // sends to function to update db storage....
-    //         }, // after completing popup...
-    //         add_class(newClass){
-    //             if(diagnostic){console.log(newClass)}
-    //
-    //             let classObj = {
-    //                 class:newClass.classname,
-    //                 startTime:newClass.start_time,
-    //                 endTime:newClass.end_time,
-    //                 building:newClass.building,
-    //             };
-    //
-    //             let dowArray = [];
-    //
-    //             for (const day in newClass.days_of_week){
-    //                 if(newClass.days_of_week[day] === true){
-    //                     dowArray.push(day.toUpperCase());
-    //                 }
-    //             }
-    //
-    //             classObj['dow'] = dowArray;
-    //
-    //             if(diagnostic){console.log(classObj)}
-    //
-    //             app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
-    //             app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
-    //         }// after completing popup...
-    //     },
-    //     computed:{
-    //
-    //     },
-    //     mounted(){
-    //
-    //         this.$root.$on('populate_profile_first_time', (data)=>{
-    //
-    //             localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
-    //
-    //             this.profile.splice(0);
-    //
-    //             if(diagnostic) {console.log(data)}
-    //
-    //             let newObj = {
-    //                 username:`${data.fname} ${data.lname}`,
-    //                 on_campus: data.on_campus,
-    //                 IMG:data.photoPath,
-    //                 school:data.uni,
-    //                 job:data.job,
-    //                 degree:data.major,
-    //                 extras:[
-    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
-    //                     {item:`${data.major}`, img:'./photos/net.png'},
-    //                 ],
-    //                 hob:[],
-    //                 desc:data.desc,
-    //                 classes:[]
-    //             }
-    //
-    //             this.profile = [newObj];
-    //         })
-    //         this.$root.$on('populate_profile', (data)=>{
-    //
-    //             console.log(data)
-    //
-    //             localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
-    //
-    //             this.profile.splice(0);
-    //
-    //             if(diagnostic){console.log(data)}
-    //
-    //             let newObj = {
-    //                 username:`${data.fname} ${data.lname}`,
-    //                 on_campus: data.on_campus,
-    //                 IMG:data.photoPath,
-    //                 school:data.uni,
-    //                 job:data.job,
-    //                 degree:data.major,
-    //                 extras:[
-    //                     {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
-    //                     {item:`${data.major}`, img:'./photos/net.png'},
-    //                 ],
-    //                 hob:data.hob,
-    //                 desc:data.desc,
-    //                 classes:data.classes
-    //
-    //
-    //             }
-    //
-    //             this.profile = [newObj];
-    //
-    //         })
-    //         this.$root.$on('remove_popup', ()=>{
-    //
-    //             this.hobbie_popup = false;
-    //
-    //         })
-    //
-    //     }
-    // })
 
 
 
