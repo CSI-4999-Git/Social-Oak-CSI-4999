@@ -591,12 +591,12 @@
             /* bottom: 25px; */
             bottom: 5px;
             height: 55px;
-            width: 100%;
-            /* left: 50%; */
-            /* transform: translate(-50%,0); */
+            width: 97%;
+            left: 50%;
+            transform: translate(-50%,0);
             background-color: #e0e0e2;
-            /*border-bottom-right-radius: 20px;*/
-            /*border-bottom-left-radius: 20px;*/
+            /* border-bottom-right-radius: 20px; */
+            /* border-bottom-left-radius: 20px; */
         }
         div {
             display: block;
@@ -1927,6 +1927,7 @@
                       <div class = chatWindow>
                       <div class = bubble_window>
                         <div class = msg v-for="thing in this.chatWindowArray">{{ thing.date_sent + '       ' + thing.message }}</div>
+                    </div>
                         <div class = input_bar>
                           <div class = table_div_chat>
 
@@ -1937,9 +1938,8 @@
                             <div class = column_div_chat style="width: 8%;">
                               <div class = send_btn @click="appendTextToChat(hold,inputText2)">Send</div>
                             </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
                     </div>
                   </div>
                 </div>
@@ -2097,7 +2097,50 @@
                 axios(config)
                     .then(function (response) {
 
-                        console.log(response.data);
+                        console.log(response.data); //message sent...
+
+                        let stuff = JSON.stringify({username: recipient});
+
+                        let config = {
+                            method: 'post',
+                            url: 'http://198.74.61.26:8080/messages/read/',
+                            headers: {
+                                'Authorization': `Token ${current_user.token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            data : stuff
+                        };
+
+                        axios(config)
+                            .then(function (response) {
+
+                                console.log(response.data);
+
+                                if(response.data.length === 0){
+                                    // //create a new chat....
+                                    //
+                                    // app.$root.$emit('populate_blank_chat',person_to_chat_with);
+                                }else{
+                                    //open old chat....
+
+                                    app.$root.$emit('populate_chat', response.data, recipient);
+                                }
+
+
+                                // app.$root.$emit('go_to_page', ('other_profile'));
+
+
+
+                            }).catch(function (error) {
+                            console.log(error);
+                            // this.inputText = '';
+                            // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                            // this.inputText = '';
+
+                        });
+
+
+
 
 
                     }).catch(function (error) {
