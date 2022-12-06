@@ -440,6 +440,15 @@
             margin-bottom: 20px;
             font-size: 12px;
         }
+
+        .chatTab:active{
+           background-color: #1c6fa8;
+            color: white;
+        }
+
+        .otherPerson:active{
+            color: white;
+        }
         .blue:active{
             color: white;
         }
@@ -547,20 +556,17 @@
         }
 
         .msg{
-            position: relative;
-            height:60px;
-            width: 85%;
+            position: absolute;
+            height: 60px;
+            width: 90%;
             transform: translate(-50%,0);
             left: 50%;
             font-family: 'normal_def';
-            color: #2a2828;
+            color: #d2d2d2;
             font-size: 20px;
-            /*background-color: cadetblue;*/
+            /* background-color: cadetblue; */
             line-height: 60px;
-
-
         }
-
         /*.input_bar{*/
         /*    position: absolute;*/
         /*    bottom: 25px;*/
@@ -1111,7 +1117,17 @@
             width: 100%;
         }
 
-
+        .bubbleBoy{
+            /*background: blue;*/
+            height: 60px;
+            position: relative;
+            text-align: center;
+            width: 45%;
+            left: 50%;
+            transform: translate(-50%);
+            border-radius: 25px;
+            margin-bottom: 25px;
+        }
 
 
 
@@ -1223,6 +1239,33 @@
         },
         methods: {
             goToPage(page){
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+
+                let config = {
+                    method: 'get',
+                    url: 'http://198.74.61.26:8080/messages/userlist/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(response.data.user_list);
+
+                        app.$root.$emit('populate_chat_side', response.data.user_list);
+
+
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
                 app.$root.$emit('go_to_page', page.val); //changes the page to the one the user clicks....
             }
         },
@@ -1914,45 +1957,51 @@
         template:
             `
               <div>
-                <div class = main_contain>
-                  <div class = table_div>
-                    <div class = column_div style="width: 15%"><div class = sidebar>
+              <div class=main_contain>
+                <div class=table_div>
+                  <div class=column_div style="width: 15%">
+                    <div class=sidebar>
                       <div class=addBtn2 @click="open_popup('add_chat_tab')">+Add</div>
-                      <div class = chatTab  v-for="index in this.chats" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }" >
-                        <div class = otherPerson @click="populateChatWindow_WIP(index)">{{index}}</div>
+                      <div class=chatTab v-for="index in this.chats" :class="{ blue : hold === index.otherPerson, chatTab: hold !== index.otherPerson }">
+                        <div class=otherPerson @click="populateChatWindow_WIP(index)">{{ index }}</div>
                       </div>
                     </div>
-                    </div>
-                    <div class = column_div style="width: 85%">
-                      <div class = chatWindow>
-                      <div class = bubble_window>
-                        <div class = msg v-for="thing in this.chatWindowArray">{{ thing.date_sent + '       ' + thing.message }}</div>
-                    </div>
-                        <div class = input_bar>
-                          <div class = table_div_chat>
+                  </div>
+                  <div class=column_div style="width: 85%">
+                    <div class=chatWindow>
+                      <div class=bubble_window>
+                        <div class=bubbleBoy style="background-color: #db1e1e; color: white" v-for="thing in this.chatWindowArray" v-if="thing.sender === this.cu ">
+                          <div class=msg>{{ thing.date_sent + '       ' + thing.message }}</div>
+                        </div>
+                        <div class=bubbleBoy style="background-color: #1c70a9; color: white" v-else>
+                          <div class=msg>{{ thing.date_sent + '       ' + thing.message }}</div>
+                        </div>
+                      </div>
+                      <div class=input_bar>
+                        <div class=table_div_chat>
 
-                            <div class = column_div_chat style="width: 90%;">
-                              <input type="text" class = userIn v-model="inputText2">
-                            </div>
+                          <div class=column_div_chat style="width: 90%;">
+                            <input type="text" class=userIn id=chIn v-model="inputText2">
+                          </div>
 
-                            <div class = column_div_chat style="width: 8%;">
-                              <div class = send_btn @click="appendTextToChat(hold,inputText2)">Send</div>
-                            </div>
+                          <div class=column_div_chat style="width: 8%;">
+                            <div class=send_btn @click="appendTextToChat(hold,inputText2)">Send</div>
                           </div>
                         </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class = popup2 v-if="add_chat_tab">
+              <div class=popup2 v-if="add_chat_tab">
                 <div>
                   <input type="text" class="itext" placeholder="email" style="top: 75px" v-model="inputText3">
                 </div>
 
 
-                <div class = addBtn style="position:absolute; width: 120px; bottom: 10px" @click="create_chat_tab(inputText3)">Create Chat</div>
-                <div class = close @click="add_chat_tab = false">Close</div>
+                <div class=addBtn style="position:absolute; width: 120px; bottom: 10px" @click="create_chat_tab(inputText3)">Create Chat</div>
+                <div class=close @click="add_chat_tab = false">Close</div>
 
               </div>
 
@@ -1962,56 +2011,14 @@
             `,
         data(){
             return {
-                // chats:[
-                //     {
-                //         otherPerson:'Rick Sanchez',
-                //         chat:[
-                //             {to:'Larry', from:'Rick', timestamp:'4:06 PM', msg:'Hello Larry!'},
-                //             {to:'Rick', from:'Larry', timestamp:'4:07 PM', msg:'Hey Rick!'},
-                //             {to:'Larry', from:'Rick', timestamp:'6:38 PM', msg:'Nothing much, just won the lottery...'}
-                //         ]
-                //     },
-                //     // {
-                //     //     otherPerson:'Garry Jerry',
-                //     //     chat:[
-                //     //         {to:'Larry', from:'Garry', timestamp:'3:12 PM', msg:'Hello Larry!'},
-                //     //         {to:'Garry', from:'Larry', timestamp:'3:12 PM', msg:'Hello Garry!'},
-                //     //         {to:'Larry', from:'Garry', timestamp:'3:13 PM', msg:'Did you know that our names rhyme?'}
-                //     //     ]
-                //     // },
-                //     // {
-                //     //     otherPerson:'Sarah Thomas',
-                //     //     chat:[
-                //     //         {to:'Larry', from:'Sarah', timestamp:'1:06 PM', msg:'Hello Larry!'},
-                //     //         {to:'Sarah', from:'Larry', timestamp:'1:06 PM', msg:'Hello Sarah!'},
-                //     //         {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'What are you up to?'},
-                //     //         {to:'Sarah', from:'Larry', timestamp:'1:08 PM', msg:'Skydiving'},
-                //     //         {to:'Larry', from:'Sarah', timestamp:'1:08 PM', msg:'Oh wow, I have never been! Is it fun?'}
-                //     //     ]
-                //     // },
-                //     // {
-                //     //     otherPerson:'Emily Squiggle',
-                //     //     chat:[
-                //     //         {to:'Larry', from:'Emily', timestamp:'2:06 PM', msg:'Hello Larry!'},
-                //     //         {to:'Emily', from:'Larry', timestamp:'2:07 PM', msg:'Whats up?'},
-                //     //         {to:'Larry', from:'Emily', timestamp:'2:08 PM', msg:'With my parents at a christmas party.'}
-                //     //     ]
-                //     // },
-                //     // {
-                //     //     otherPerson:'Austin Boston',
-                //     //     chat:[
-                //     //         {to:'Larry', from:'Austin', timestamp:'2:06 PM', msg:'Hello Larry!'},
-                //     //         {to:'Austin', from:'Larry', timestamp:'2:07 PM', msg:'Hello Austin!'},
-                //     //         {to:'Larry', from:'Austin', timestamp:'2:08 PM', msg:'Test complete!'}
-                //     //     ]
-                //     // },
-                // ],
                 chats:[],
                 chatWindowArray:[],
                 inputText2:'',
                 inputText3:'',
                 hold:'',
-                add_chat_tab:false
+                add_chat_tab:false,
+                checker:'',
+                cu:current_user.email
 
             }
         },
@@ -2027,51 +2034,100 @@
 
             },
             populateChatWindow_WIP(person_to_chat_with){ // call this when done...
+
+                clearInterval(this.checker);
+
+                this.checker = setInterval(()=>{
+                    current_user = localStorage.getItem('current_user'); // grab user....
+                    current_user = JSON.parse(current_user);
+                    console.log(current_user);
+
+                    let stuff = JSON.stringify({username: person_to_chat_with});
+
+                    let config = {
+                        method: 'post',
+                        url: 'http://198.74.61.26:8080/messages/read/',
+                        headers: {
+                            'Authorization': `Token ${current_user.token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        data : stuff
+                    };
+
+                    axios(config)
+                        .then(function (response) {
+
+                            console.log(response.data);
+
+                            if(response.data.length === 0){
+                                //create a new chat....
+
+                                app.$root.$emit('populate_blank_chat',person_to_chat_with);
+                            }else{
+                                //open old chat....
+
+                                app.$root.$emit('populate_chat', response.data, person_to_chat_with);
+                            }
+
+
+                            // app.$root.$emit('go_to_page', ('other_profile'));
+
+
+
+                        }).catch(function (error) {
+                        console.log(error);
+                        // this.inputText = '';
+                        // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                        // this.inputText = '';
+
+                    });
+                },750)
+
                 this.activate(person_to_chat_with);
 
-                current_user = localStorage.getItem('current_user'); // grab user....
-                current_user = JSON.parse(current_user);
-                console.log(current_user);
-
-                let stuff = JSON.stringify({username: person_to_chat_with});
-
-                let config = {
-                    method: 'post',
-                    url: 'http://198.74.61.26:8080/messages/read/',
-                    headers: {
-                        'Authorization': `Token ${current_user.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    data : stuff
-                };
-
-                axios(config)
-                    .then(function (response) {
-
-                        console.log(response.data);
-
-                        if(response.data.length === 0){
-                            //create a new chat....
-
-                            app.$root.$emit('populate_blank_chat',person_to_chat_with);
-                        }else{
-                            //open old chat....
-
-                            app.$root.$emit('populate_chat', response.data, person_to_chat_with);
-                        }
-
-
-                        // app.$root.$emit('go_to_page', ('other_profile'));
-
-
-
-                    }).catch(function (error) {
-                    console.log(error);
-                    // this.inputText = '';
-                    // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
-                    // this.inputText = '';
-
-                });
+                // current_user = localStorage.getItem('current_user'); // grab user....
+                // current_user = JSON.parse(current_user);
+                // console.log(current_user);
+                //
+                // let stuff = JSON.stringify({username: person_to_chat_with});
+                //
+                // let config = {
+                //     method: 'post',
+                //     url: 'http://198.74.61.26:8080/messages/read/',
+                //     headers: {
+                //         'Authorization': `Token ${current_user.token}`,
+                //         'Content-Type': 'application/json'
+                //     },
+                //     data : stuff
+                // };
+                //
+                // axios(config)
+                //     .then(function (response) {
+                //
+                //         console.log(response.data);
+                //
+                //         if(response.data.length === 0){
+                //             //create a new chat....
+                //
+                //             app.$root.$emit('populate_blank_chat',person_to_chat_with);
+                //         }else{
+                //             //open old chat....
+                //
+                //             app.$root.$emit('populate_chat', response.data, person_to_chat_with);
+                //         }
+                //
+                //
+                //         // app.$root.$emit('go_to_page', ('other_profile'));
+                //
+                //
+                //
+                //     }).catch(function (error) {
+                //     console.log(error);
+                //     // this.inputText = '';
+                //     // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                //     // this.inputText = '';
+                //
+                // });
 
             },
             appendTextToChat(recipient, message){
@@ -2116,60 +2172,17 @@
 
                                 console.log(response.data);
 
-                                if(response.data.length === 0){
-                                    // //create a new chat....
-                                    //
-                                    // app.$root.$emit('populate_blank_chat',person_to_chat_with);
-                                }else{
-                                    //open old chat....
-
-                                    app.$root.$emit('populate_chat', response.data, recipient);
-                                }
-
-
-                                // app.$root.$emit('go_to_page', ('other_profile'));
-
-
+                                app.$root.$emit('populate_chat', response.data, recipient);
 
                             }).catch(function (error) {
                             console.log(error);
-                            // this.inputText = '';
-                            // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
-                            // this.inputText = '';
 
                         });
-
-
-
-
 
                     }).catch(function (error) {
                     console.log(error);
 
                 });
-
-
-
-                //
-                //
-                //
-                // console.log(this.inputText);
-                //
-                // // this.chatWindowArray.push({to:'Test', from:'test', timestamp:'none', msg:this.inputText});
-                //
-                // this.chat.forEach(chat_session=>{
-                //     if(chat_session.otherPerson === this.hold){ // if chat compared is the one currently selected on the page...
-                //         console.log('here')
-                //         chat_session.chat.push({to:'Test', from:'test', timestamp:moment().format('LT'), msg:this.inputText})
-                //         this.populateChatWindow(chat_session);
-                //         // chat_session.chat.push()
-                //     }
-                // })
-
-
-
-
-
             },
             activate(name) {
                 this.hold = name;
@@ -2246,37 +2259,42 @@
         mounted(){
             app.$root.$on('populate_blank_chat',(person)=>{
 
-                this.appendTextToChat(person, 'Hey');
+                this.appendTextToChat(person, '');
 
 
-                // current_user = localStorage.getItem('current_user'); // grab user....
-                // current_user = JSON.parse(current_user);
-                // console.log(current_user);
-                //
-                //
-                // let config = {
-                //     method: 'get',
-                //     url: 'http://198.74.61.26:8080/messages/userlist/',
-                //     headers: {
-                //         'Authorization': `Token ${current_user.token}`,
-                //         'Content-Type': 'application/json'
-                //     }
-                // };
-                //
-                // axios(config)
-                //     .then(function (response) {
-                //
-                //         console.log(response.data.user_list);
-                //
-                //         app.$root.$emit('populate_chat_side', response.data.user_list);
-                //
-                //
-                //
-                //     }).catch(function (error) {
-                //     console.log(error);
-                //     // this.inputText = '';
-                //     // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
-                // });
+                // populate new side bar...
+
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+
+                let config = {
+                    method: 'get',
+                    url: 'http://198.74.61.26:8080/messages/userlist/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(response.data.user_list);
+
+                        app.$root.$emit('populate_chat_side', response.data.user_list);
+
+                        this.add_chat_tab = false
+
+
+
+
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
             })
             app.$root.$on('populate_chat',(chat_data)=>{
 
@@ -2285,22 +2303,6 @@
                 this.chatWindowArray = chat_data;
 
             })
-            // app.$root.$on('populate_chat',(chat_data)=>{
-            //     console.log(person);
-            //
-            //     let nObj = {};
-            //
-            //     nObj['otherPerson'] = person;
-            //     nObj['chat'] = []
-            //
-            //     data.forEach(chat=>{
-            //         nObj.chat.push({to:chat.recipient,from:chat.sender,timestamp:chat.date_sent, msg:chat.message})
-            //     })
-            //
-            //     console.log(nObj)
-            //
-            //     this.chats.push(nObj)
-            // })
             app.$root.$on('populate_chat_side',(array)=>{
                 // console.log(person)
 
@@ -2308,10 +2310,9 @@
 
 
                 this.chats = array;
+                console.log('chat_bar_updated')
             })
             app.$root.$on('get_latest_chat_list_and_load',()=>{
-
-                console.log('test')
 
 
                 current_user = localStorage.getItem('current_user'); // grab user....
@@ -2336,12 +2337,12 @@
                         app.$root.$emit('populate_chat_side', response.data.user_list);
 
 
-
                     }).catch(function (error) {
                     console.log(error);
-                    // this.inputText = '';
-                    // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
                 });
+            })
+            app.$root.$on('clear_checker',()=>{
+                clearInterval( this.checker);
             })
 
 
@@ -2889,6 +2890,8 @@
         },
         mounted(){
             this.$root.$on('go_to_page',(page)=>{
+                app.$root.$emit('clear_checker');
+                console.log('checker cleared!')
 
                 try{
                     switch (page) {
@@ -2923,7 +2926,7 @@
 
                             break;
                         case 'chat':
-                            app.$root.$emit('get_latest_chat_list_and_load');
+                            // app.$root.$emit('get_latest_chat_list_and_load');
 
                             this.starting_pages.state = false; // starting pages state
 
