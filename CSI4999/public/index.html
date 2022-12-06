@@ -1081,6 +1081,35 @@
             text-align: center;
         }
 
+        .mutualConProfilePhotosBox{
+            position: relative;
+            /*display: inline-block;*/
+            width: 300px;
+            height: auto;
+            left: 50%;
+            transform: translate(-50%,0);
+        }
+
+        .pPhoto_small{
+            display: inline-block;
+            height: 100px;
+            width: 100px;
+            background-color: purple;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .mini_p_image {
+            position: relative;
+            transform: translate(-50%,-50%);
+            left: 50%;
+            top: 50%;
+            height: auto;
+            width: 100%;
+        }
+
+
+
 
 
 
@@ -1209,11 +1238,11 @@
                 <div class = box>
                   <div class = input_con>
                     <input type="text" class="itext" id="username" placeholder="Username" v-model="username">
-                    <input type="password" class = "itext" id="password" placeholder="Password" v-model="password" >
+                    <input type="password" class = "itext" id="password" placeholder="Password" v-model="password">
                   </div>
                   <button class = si_btn @click="signIn(username, password)">Sign In</button>
                   <div class = link @click="signUp()">Don't have an account? Sign up</div>
-                  <div class = link2 @click="forgot()">Forgot Password?</div>
+<!--                  <div class = link2 @click="forgot()">Forgot Password?</div>-->
                 </div>
 
                 </div>
@@ -1291,18 +1320,18 @@
 
                                     app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
 
-                                })
-                                .catch(function (error) {
-                                    console.log(error);
+                                }).catch(function (error) {
+                                    // console.log(error.request.responseText);
+                                    // alert(error.request.responseText)
                                 });
 
 
                         } else {
                             // alert('Account creation unsuccessful!');
                         }
-                    })
-                    .catch(error => {
-                        console.log(error);
+                    }).catch(error => {
+                    let err = JSON.parse(error.request.responseText);
+                    alert(err.non_field_errors[0]);
                     })
             }
 
@@ -1322,7 +1351,8 @@
               <div class=box style="height: 740px; top: 60%;">
                 <div class=overflow_con>
                   <div class=input_con style="top:17px;">
-
+                    <div class=titlePhoto>Profile Photo Upload</div>
+                    <input type="file" class=photo_upload id="photo_upload" style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg">
                     <input type="text" class="itext" placeholder="Email Address" v-model="sign_up_obj.email">
                     <input type="text" class="itext" placeholder="First Name" v-model="sign_up_obj.fname">
                     <input type="text" class="itext" placeholder="Last Name" v-model="sign_up_obj.lname">
@@ -1341,13 +1371,9 @@
                     <div class="text">On campus?</div>
                     <input type="checkbox" class="itext" style="cursor: pointer" v-model="sign_up_obj.on_campus">
                     <input type="text" class="itext" placeholder="Job" v-model="sign_up_obj.job">
-
-                    <div class=titlePhoto>Profile Photo Upload</div>
-                    <input type="file" class=photo_upload id="photo_upload" style="display: block" onchange="uploadFile()" accept=".png,.jpeg,.jpg">
                   </div>
                 </div>
-                <button class=si_btn @click="create_user(forSql)" v-show="su">Sign Up</button>
-                <button class=si_btn v-show="!su" style="background-color:rgba(191,194,206,0.53)">Sign Up</button>
+                <button class=si_btn @click="create_user(forSql)">Sign Up</button>
                 <div class=link @click="back_to_sign_in()">Go Back</div>
               </div>
               </div>
@@ -1546,6 +1572,7 @@
                   <div class=divRow>
                     <div class=divCol >
                       <div class=sub_contain>
+                        <div class=addBtn @click="open_popup('desc')" style="width: 225px">Change Description</div>
                         <div class=subTitle>Here For...</div>
                         <div class=desc>{{ index.desc }}</div>
                       </div>
@@ -1559,11 +1586,12 @@
                         </div>
                       </div>
                     </div>
-                    <div class=divCol >
+                    <div class=divCol>
                       <div class=subTitle>Mutual Connections</div>
                       <div class=mutualConProfilePhotosBox>
-                        <div class=pPhoto_small>
-                          <div style="font-family: 'normal_def';">No Friends</div>
+                        <div class=pPhoto_small v-for="person in index.friends">
+                          <img :src="person" class = mini_p_image>
+<!--                          <div style="font-family: 'normal_def';">No Friends</div>-->
                         </div>
                       </div>
                     </div>
@@ -1614,6 +1642,15 @@
                 <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_hobbie(this.hobbie_addition)">Add</div>
               </div>
 
+
+              <div class="popup" v-if="desc">
+                <div class=pop_up_text>
+                  <div class = close @click="desc = false">Close</div>
+                  <div class=text style="font-size: 1.3em">Desc:<input class="itext" type="text" v-model="this.desc_replacement"></div>
+                </div>
+                <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_desc(this.desc_replacement)">Add</div>
+              </div>
+
               <div class="popup" v-if="this.classes_popup" style="top: 885px">
                 <div class=pop_up_text>
                   <div class = close @click="classes_popup = false">Close</div>
@@ -1646,7 +1683,9 @@
                 profile:[],
                 hobbie_popup:false,
                 classes_popup:false,
+                desc:false,
                 hobbie_addition:'',
+                desc_replacement:'',
                 class_addition:{
                     classname:'',
                     days_of_week:{
@@ -1682,6 +1721,9 @@
                             break;
                         case 'classes':
                             this.classes_popup = true;
+                            break;
+                        case 'desc':
+                            this.desc = true;
                             break;
                         default:
                             break;
@@ -1722,6 +1764,12 @@
 
                 app.$root.$emit('update_browser','Profile', 'classes', classObj); // sends to function to update browser storage....
                 app.$root.$emit('update_db','Profile', 'classes', classObj); // sends to function to update db storage....
+            }, // after completing popup...
+            add_desc(desc){
+                if(diagnostic){console.log(desc)}
+
+                app.$root.$emit('update_browser','Profile', 'desc', desc); // sends to function to update browser storage....
+                app.$root.$emit('update_db','Profile', 'desc', desc); // sends to function to update db storage....
             }, // after completing popup...
             toggle_show_schedule(value){
 
@@ -1794,10 +1842,12 @@
                     extras:[
                         {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
                         {item:`${data.major}`, img:'./photos/net.png'},
+                        {item:`${data.job}`},
                     ],
                     hob:[],
                     desc:data.desc,
-                    classes:[]
+                    classes:[],
+                    friends:[]
                 }
 
                 this.toggleGuy = data.show_schedule;
@@ -1824,10 +1874,12 @@
                     extras:[
                         {item:`${data.cls}, Undergraduate`, img:'./photos/hat.png'},
                         {item:`${data.major}`, img:'./photos/net.png'},
+                        {item:`${data.job}`},
                     ],
                     hob:data.hob,
                     desc:data.desc,
-                    classes:data.classes
+                    classes:data.classes,
+                    friends:data.friends,
 
 
                 }
@@ -1841,6 +1893,10 @@
 
                 this.hobbie_popup = false;
 
+            })
+            this.$root.$on('add_friend_to_mutual_connections', (friend_photo)=>{
+                app.$root.$emit('update_browser','Profile', 'friends', friend_photo); // sends to function to update browser storage....
+                app.$root.$emit('update_db','Profile', 'friends', friend_photo); // sends to function to update db storage....
             })
 
         }
@@ -2102,6 +2158,7 @@
                         <div class=username>{{ index.username }}</div>
                         <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
                         <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+                        <div class=addBtn @click="add_friend(index)" style="width: 150px">+Add Friend</div>
                         <div class=divRow>
                           <div class=divCol >
                             <div class=sub_contain>
@@ -2242,6 +2299,47 @@
 
 
             },
+            add_friend(other_profile){
+
+                console.log(other_profile)
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                console.log(current_user);
+
+                let stuff = JSON.stringify({username: other_profile.others_email});
+
+                let config = {
+                    method: 'post',
+                    url: 'http://198.74.61.26:8080/profile/addfriend/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : stuff
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        console.log(response.data);
+
+                        alert(`${other_profile.username} has been added as a friend`);
+
+                        // app.$root.$emit('populate_profile_other', response.data);
+                        app.$root.$emit('populate_profile', );
+
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    this.inputText = '';
+                    // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                });
+
+
+
+
+            }
         },
         computed:{
 
@@ -2298,10 +2396,12 @@
                     extras:[
                         {item:`${data.class_standing}, Undergraduate`, img:'./photos/hat.png'},
                         {item:`${data.major}`, img:'./photos/net.png'},
+                        {item:`${data.job}`},
                     ],
                     hob:data.interests,
                     desc:data.about_me,
-                    classes:final_array
+                    classes:final_array,
+                    others_email:data.email
 
 
                 }
@@ -2357,14 +2457,26 @@
                                 if(diagnostic){console.log(past_user);} // log user_data
 
 
-                                past_user[prop].push(data); // modify data
+                                if(prop !== 'desc' ){
+                                    past_user[prop].push(data); // modify data
 
-                                localStorage.clear(); // clears the local storage
+                                    localStorage.clear(); // clears the local storage
 
-                                localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+                                    localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
 
-                                app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
-                                app.$root.$emit('remove_popup'); // removes the popup...
+                                    app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                    app.$root.$emit('remove_popup'); // removes the popup...
+                                }else{
+                                    past_user[prop] = data; // modify data
+
+                                    localStorage.clear(); // clears the local storage
+
+                                    localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+
+                                    app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                    app.$root.$emit('remove_popup'); // removes the popup...
+
+                                }
 
                             }
                             break;
@@ -2431,7 +2543,7 @@
                                                 THU:false,
                                                 FRI:false,
                                             };
-                                            
+
                                             for(const item in data){
 
                                                 if(item === 'dow'){
@@ -2487,6 +2599,38 @@
                                                 });
                                         }
                                         break;
+                                    case 'desc': // desc...
+                                        current_user = localStorage.getItem('current_user'); // grab user....
+                                        if(current_user !== null){
+                                            current_user = JSON.parse(current_user);
+                                            console.log(current_user);
+
+
+                                            let stuff = JSON.stringify({
+                                                "about_me": data,
+                                            });
+
+                                            let config = {
+                                                method: 'patch',
+                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                headers: {
+                                                    'Authorization': `Token ${current_user.token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data : stuff
+                                            };
+
+                                            axios(config)
+                                                .then(function (response) {
+
+                                                    console.log(JSON.stringify(response.data));
+                                                    // alert(`Schedule Updated!`)
+
+                                                }).catch(function (error) {
+                                                    console.log(error);
+                                                });
+                                        }
+                                        break;
                                     default:
                                         break;
 
@@ -2494,61 +2638,7 @@
                             }catch (e) {
                                 console.log(e.message)
                             }
-                            //
-                            // let myUser = localStorage.getItem('current_user'); // grab user....
-                            // if(myUser !== null){
-                            //     myUser = JSON.parse(myUser);
-                            //     console.log(myUser);
-                            //
-                            //     let data = JSON.stringify({
-                            //         "about_me": myUser.desc,
-                            //         "class_standing": myUser.cls,
-                            //         "first_name": myUser.fname,
-                            //         "last_name": myUser.lname,
-                            //         // "interests": "",
-                            //         "job": myUser.job,
-                            //         "on_campus": myUser.on_campus,
-                            //         "university": myUser.uni
-                            //     });
-                            //
-                            //     let config = {
-                            //         method: 'patch',
-                            //         url: 'http://198.74.61.26:8080/profile/update/',
-                            //         headers: {
-                            //             'Authorization': `Token ${myUser.token}`,
-                            //             'Content-Type': 'application/json'
-                            //         },
-                            //         data : data
-                            //     };
-                            //
-                            //     axios(config)
-                            //         .then(function (response) {
-                            //
-                            //             console.log(JSON.stringify(response.data));
-                            //
-                            //             localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
-                            //
-                            //             console.log('done'); // finished...
-                            //
-                            //             app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
-                            //
-                            //             app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
-                            //
-                            //         })
-                            //         .catch(function (error) {
-                            //             console.log(error);
-                            //         });
-                            //
-                            //
-                            //
-                            //     localStorage.clear();
-                            //
-                            //     localStorage.setItem('current_user', JSON.stringify(past_user)); // saves user to browser's local storage....
-                            //
-                            //     app.$root.$emit('populate_profile', past_user); // populates profile.....
-                            //     app.$root.$emit('remove_popup'); // removes the popup...
-                            //
-                            // }
+
                             break;
                         case 'Chat': // chat page...
                             break;
@@ -2807,6 +2897,7 @@
                         webSocket.on('photoRes',(name)=>{
                             console.log(name);
                             app.$root.$emit('upload_complete', (name));
+                            $("#photo_upload")[0].value = '';
 
 
                         })
@@ -2815,7 +2906,7 @@
                     })
             };
             fileReader.readAsArrayBuffer(file)
-            $("#photo_upload")[0].value = '';
+            // $("#photo_upload")[0].value = '';
         }else{
             console.log(`file undefined`);
         }
