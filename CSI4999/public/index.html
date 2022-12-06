@@ -2202,10 +2202,38 @@
         },
         mounted(){
             app.$root.$on('populate_blank_chat',(person)=>{
-                this.chats.push({
-                    otherPerson:person,
-                    chat:[]
-                })
+
+                this.appendTextToChat(person, 'Hey');
+
+
+                // current_user = localStorage.getItem('current_user'); // grab user....
+                // current_user = JSON.parse(current_user);
+                // console.log(current_user);
+                //
+                //
+                // let config = {
+                //     method: 'get',
+                //     url: 'http://198.74.61.26:8080/messages/userlist/',
+                //     headers: {
+                //         'Authorization': `Token ${current_user.token}`,
+                //         'Content-Type': 'application/json'
+                //     }
+                // };
+                //
+                // axios(config)
+                //     .then(function (response) {
+                //
+                //         console.log(response.data.user_list);
+                //
+                //         app.$root.$emit('populate_chat_side', response.data.user_list);
+                //
+                //
+                //
+                //     }).catch(function (error) {
+                //     console.log(error);
+                //     // this.inputText = '';
+                //     // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                // });
             })
             app.$root.$on('populate_chat',(chat_data)=>{
 
