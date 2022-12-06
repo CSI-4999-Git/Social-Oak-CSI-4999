@@ -492,7 +492,7 @@
 
 
         .table_div2{
-            position: absolute;
+            position: relative;
             width: 100%;
             top: 72px;
             height: 100%;
@@ -1040,10 +1040,10 @@
         /*}*/
 
         .nav_switch{
-            position: absolute;
+            position: relative;
             transform: translate(-50%,0);
             left: 50%;
-            top: -105px;
+        /* top: -105px; */
         }
 
         .tt{
@@ -1094,9 +1094,11 @@
             display: inline-block;
             height: 100px;
             width: 100px;
-            background-color: purple;
+            /*background-color: purple;*/
             border-radius: 50%;
             overflow: hidden;
+            margin-left: 2px;
+            margin-right: 2px;
         }
 
         .mini_p_image {
@@ -1297,7 +1299,7 @@
 
                                     user['email'] = userN;
                                     user['fname'] = response.data.first_name;
-                                    user['lname'] = response.data.first_name;
+                                    user['lname'] = response.data.last_name;
                                     user['password'] = pass;
                                     user['rePass'] = pass;
                                     user['uni'] = response.data.university;
@@ -1395,7 +1397,8 @@
                     job:'',
                     on_campus:false,
                     show_schedule:true,
-                    classes:[]
+                    classes:[],
+                    friends:[],
                 },
                 forSql:{},
                 su:false
@@ -1596,7 +1599,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class=greySubBackground>
+<!--                  <div class=greySubBackground>-->
                     <div class = nav_switch>
                       <div>Schedule View</div>
                      <div><label class="switch" id = nav_switch><input type="checkbox" v-model="toggleGuy" @change="toggle_show_schedule(toggleGuy)"><span class="slider round"></span></label>
@@ -1630,7 +1633,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
+<!--                  </div>-->
                 </div>
               </div>
 
@@ -1894,9 +1897,13 @@
                 this.hobbie_popup = false;
 
             })
-            this.$root.$on('add_friend_to_mutual_connections', (friend_photo)=>{
-                app.$root.$emit('update_browser','Profile', 'friends', friend_photo); // sends to function to update browser storage....
-                app.$root.$emit('update_db','Profile', 'friends', friend_photo); // sends to function to update db storage....
+            this.$root.$on('add_friend_to_mutual_connections', (friend)=>{
+                app.$root.$emit('update_browser','Profile', 'friends', friend.IMG); // sends to function to update browser storage....
+
+                console.log('FRIEND')
+                console.log(friend)
+
+                // app.$root.$emit('update_db','Profile', 'friends', friend_photo); // sends to function to update db storage....
             })
 
         }
@@ -2177,8 +2184,8 @@
                           <div class=divCol >
                             <div class=subTitle>Mutual Connections</div>
                             <div class=mutualConProfilePhotosBox>
-                              <div class=pPhoto_small>
-                                <div style="font-family: 'normal_def';">No Friends</div>
+                              <div class=pPhoto_small v-for="person in index.friends">
+                                <img :src="person.profile" class = mini_p_image>
                               </div>
                             </div>
                           </div>
@@ -2327,13 +2334,16 @@
                         alert(`${other_profile.username} has been added as a friend`);
 
                         // app.$root.$emit('populate_profile_other', response.data);
-                        app.$root.$emit('populate_profile', );
+
+
+                        app.$root.$emit('add_friend_to_mutual_connections',other_profile);
 
 
                     }).catch(function (error) {
                     console.log(error);
                     this.inputText = '';
-                    // alert(`Hmmm, it doesn't seem like that user exists... Try another email?`);
+                    let err = JSON.parse(error.request.responseText);
+                    alert(err.error);
                 });
 
 
@@ -2401,7 +2411,8 @@
                     hob:data.interests,
                     desc:data.about_me,
                     classes:final_array,
-                    others_email:data.email
+                    others_email:data.email,
+                    friends:data.friends
 
 
                 }
