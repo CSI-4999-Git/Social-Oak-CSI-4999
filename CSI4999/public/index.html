@@ -15,7 +15,6 @@
     <script type="text/javascript" src="./modules/FileSaver.js"></script>
     <script src="./modules/moment.js"></script>
     <script src="./modules/axios.js"></script>
-<!--    <link rel="apple-touch-icon" href="./photos/logo.png">-->
     <style>
         @font-face {
             font-family: 'normal_def'; src: url("./fonts/Poppins-Regular.ttf") format('truetype');
@@ -1188,7 +1187,6 @@
             <transition name = fade><main_profile class = main_profile v-show="profile_pages.sub_state.profile"></main_profile></transition>
             <transition name = fade><chat class = chat v-if="profile_pages.sub_state.chat"></chat></transition>
             <transition name = fade><discovery class = discovery v-show="profile_pages.sub_state.discovery"></discovery></transition>
-<!--            <transition name = fade><other_profile class = other_profile v-if="profile_pages.sub_state.other_profile"></other_profile></transition>-->
             <nav_vue class = login_nav></nav_vue>
         </div>
     </transition>
@@ -1196,13 +1194,12 @@
 </div>
 
 <script>
-
-
-
+    
     let webSocket                                      = io.connect(location.host);
     let msg
     let diagnostic                                     = true;
     let current_user;
+  
 
 
     webSocket.on('connect', ()=>{
@@ -1242,7 +1239,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
 
                 let config = {
@@ -1257,7 +1254,8 @@
                 axios(config)
                     .then(function (response) {
 
-                        console.log(response.data.user_list);
+
+                        if(diagnostic){console.log(response.data.user_list);}
 
                         app.$root.$emit('populate_chat_side', response.data.user_list);
 
@@ -1324,7 +1322,9 @@
 
                             if(diagnostic){console.log(response);}
 
-                            console.log(response.data.token);
+                            if(diagnostic){console.log(response.data.token);}
+
+
 
 
                             let config = {
@@ -1339,7 +1339,8 @@
                             axios(config)
                                 .then(function (response) {
 
-                                   console.log(response)
+
+                                    if(diagnostic){ console.log(response)}
 
                                     user['email'] = userN;
                                     user['fname'] = response.data.first_name;
@@ -1360,27 +1361,22 @@
 
                                     localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
 
-                                    console.log('done'); // finished...
+                                    if(diagnostic){ console.log('done'); }
+
 
                                     app.$root.$emit('populate_profile', user); // populates profile..... // one of these should be made for each page to be populated....
 
                                     app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
 
                                 }).catch(function (error) {
-                                    // console.log(error.request.responseText);
-                                    // alert(error.request.responseText)
+                                   console.log(error);
                                 });
-
-
-                        } else {
-                            // alert('Account creation unsuccessful!');
                         }
                     }).catch(error => {
                     let err = JSON.parse(error.request.responseText);
                     alert(err.non_field_errors[0]);
                     })
             }
-
         },
         computed:{
 
@@ -1467,21 +1463,20 @@
                 if(diagnostic){console.log('check 2');}
                 axios.post('http://198.74.61.26:8080/register2/', userData)
                     .then((response) => {
-                        console.log(response);
+                        if(diagnostic){console.log(response);}
                         if (response.status === 200 ) {
 
                             user['token'] = response.data.token;
 
                             if(diagnostic){console.log(response);}
 
-                            console.log(response.data.token);
+                            if(diagnostic){console.log(response.data.token);}
 
                             let data = JSON.stringify({
                                 "about_me": user.desc,
                                 "class_standing": user.cls,
                                 "first_name": user.fname,
                                 "last_name": user.lname,
-                                // "interests": "",
                                 "job": user.job,
                                 "on_campus": user.on_campus,
                                 "show_schedule": user.show_schedule,
@@ -1503,11 +1498,11 @@
                             axios(config)
                                 .then(function (response) {
 
-                                    console.log(JSON.stringify(response.data));
+                                    if(diagnostic){ console.log(JSON.stringify(response.data))}
 
                                     localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
 
-                                    console.log('done'); // finished...
+                                    if(diagnostic){console.log('done');} // finished...
 
                                     app.$root.$emit('populate_profile_first_time', user); // populates profile..... // one of these should be made for each page to be populated....
 
@@ -1516,10 +1511,6 @@
                                 }).catch(function (error) {
                                     console.log(error);
                                 });
-
-
-                        } else {
-                            // alert('Account creation unsuccessful!');
                         }
                     }).catch(error => {
                         console.log(error.response);
@@ -1535,17 +1526,16 @@
 
             this.$root.$on('upload_complete',(name)=>{
                 let path = name.replaceAll('"',"");
-                console.log(path);
+                if(diagnostic){console.log(path);}
 
                 this.forSql = {};
 
                 this.forSql = this.sign_up_obj;
                 this.forSql['photoPath'] = `./profile_photos/${path}`;
 
-                console.log(this.forSql);
+                if(diagnostic){console.log(this.forSql);}
 
                 app.$root.$emit('enable_signup', true);
-
 
             })
             this.$root.$on('enable_signup',(boo)=>{
@@ -1555,9 +1545,7 @@
                 }else{
                     this.su = false;
                 }
-
             })
-
         }
     })
 
@@ -1572,22 +1560,17 @@
                   <button class = si_btn>Reset Password</button>
                   <div class = link @click="signIn()">Go Back</div>
                 </div>
-
                 </div>
-
             `,
         data(){
             return {
-
             }
         },
         methods: {
             signUp(){
-                // app.$root.$emit('signup_page');
                 app.$root.$emit('go_to_page',('sign_up'));
             },
             signIn(){
-                // app.$root.$emit('signin_page');
                 app.$root.$emit('go_to_page',('sign_in'));
             }
         },
@@ -1613,9 +1596,11 @@
                   </ul>
                 </div>
                 <div class=pTitle>
+                  <div class=addBtn @click="open_popup('job_major')">Modify</div>
                   <div class=username>{{ index.username }}</div>
                   <div class=campusIndicator v-if="index.on_campus === true"><img src="photos/check.png" class=icon>On Campus</div>
                   <div class=campusIndicator v-if="index.on_campus === false"><img src="photos/uncheck.png" class=icon>Off Campus</div>
+                  <div><label class="switch" id = nav_switch><input type="checkbox" v-model="index.on_campus" @change="toggle_on_campus(index.on_campus)"><span class="slider round"></span></label></div>
                   <div class=divRow>
                     <div class=divCol >
                       <div class=sub_contain>
@@ -1638,12 +1623,10 @@
                       <div class=mutualConProfilePhotosBox>
                         <div class=pPhoto_small v-for="person in index.friends">
                           <img :src="person" class = mini_p_image>
-<!--                          <div style="font-family: 'normal_def';">No Friends</div>-->
                         </div>
                       </div>
                     </div>
                   </div>
-<!--                  <div class=greySubBackground>-->
                     <div class = nav_switch>
                       <div>Schedule View</div>
                      <div><label class="switch" id = nav_switch><input type="checkbox" v-model="toggleGuy" @change="toggle_show_schedule(toggleGuy)"><span class="slider round"></span></label>
@@ -1677,7 +1660,6 @@
                         </div>
                       </div>
                     </div>
-<!--                  </div>-->
                 </div>
               </div>
 
@@ -1696,6 +1678,15 @@
                   <div class=text style="font-size: 1.3em">Desc:<input class="itext" type="text" v-model="this.desc_replacement"></div>
                 </div>
                 <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_desc(this.desc_replacement)">Add</div>
+              </div>
+
+              <div class="popup" v-if="job_major_popup">
+                <div class=pop_up_text>
+                  <div class = close @click="job_major_popup = false">Close</div>
+                  <div class=text style="font-size: 1.3em; margin-top: 20px"><input class="itext" type="text" v-model="this.jobEntry" placeholder="Job"></div>
+                  <div class=text style="font-size: 1.3em; margin-top: 20px"><input class="itext" type="text" v-model="this.majorEntry" placeholder="Major"></div>
+                </div>
+                <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_job_major(this.jobEntry,this.majorEntry)">Change</div>
               </div>
 
               <div class="popup" v-if="this.classes_popup" style="top: 885px">
@@ -1729,10 +1720,13 @@
             return {
                 profile:[],
                 hobbie_popup:false,
+                job_major_popup:false,
                 classes_popup:false,
                 desc:false,
                 hobbie_addition:'',
                 desc_replacement:'',
+                jobEntry:'',
+                majorEntry:'',
                 class_addition:{
                     classname:'',
                     days_of_week:{
@@ -1747,17 +1741,16 @@
                     building:''
                 },
                 hNi:true,
-                toggleGuy:true
+                toggleGuy:true,
+                online_mode:false
 
             }
         },
         methods: {
             signUp(){
-                // app.$root.$emit('signup_page');
                 app.$root.$emit('go_to_page',('sign_up'));
             },
             signIn(){
-                // app.$root.$emit('signin_page');
                 app.$root.$emit('go_to_page',('sign_in'));
             },
             open_popup(pop){
@@ -1771,6 +1764,9 @@
                             break;
                         case 'desc':
                             this.desc = true;
+                            break;
+                        case 'job_major':
+                            this.job_major_popup = true;
                             break;
                         default:
                             break;
@@ -1818,12 +1814,26 @@
                 app.$root.$emit('update_browser','Profile', 'desc', desc); // sends to function to update browser storage....
                 app.$root.$emit('update_db','Profile', 'desc', desc); // sends to function to update db storage....
             }, // after completing popup...
+            add_job_major(job,major){
+
+                if(diagnostic){console.log(job)}
+                if(diagnostic){console.log(major)}
+
+                app.$root.$emit('update_browser','Profile', 'job', job); // sends to function to update browser storage....
+                app.$root.$emit('update_db','Profile', 'job', job); // sends to function to update db storage....
+
+                app.$root.$emit('update_browser','Profile', 'major', major); // sends to function to update browser storage....
+                app.$root.$emit('update_db','Profile', 'major', major); // sends to function to update db storage....
+
+                this.job_major_popup = false;
+
+            }, // after completing popup...
             toggle_show_schedule(value){
 
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
                 let data = JSON.stringify({
                     "show_schedule": value
@@ -1842,24 +1852,76 @@
                 axios(config)
                     .then(function (response) {
 
-                        console.log(JSON.stringify(response.data));
+                        if(diagnostic){console.log(JSON.stringify(response.data));}
 
                         current_user['show_schedule'] = value;
 
-                        console.log('here45')
-                        console.log(current_user)
+                       if(diagnostic){
+                           console.log(current_user);
+                       }
 
                         localStorage.clear();
 
                         localStorage.setItem('current_user', JSON.stringify(current_user)); // saves user to browser's local storage....
 
-                        console.log('done'); // finished...
+                        if(diagnostic){console.log('done');} // finished...
 
                         app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
 
                         app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
 
                         this.toggleGuy = !this.toggleGuy;
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
+            },
+            toggle_on_campus(value){
+
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                if(diagnostic){console.log(current_user);}
+
+                let data = JSON.stringify({
+                    "on_campus": value
+                });
+
+                let config = {
+                    method: 'patch',
+                    url: 'http://198.74.61.26:8080/profile/update/',
+                    headers: {
+                        'Authorization': `Token ${current_user.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data : data
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        if(diagnostic){console.log(JSON.stringify(response.data));}
+
+                        current_user['on_campus'] = value;
+
+                       if(diagnostic){
+                           console.log(current_user);
+                       }
+
+                        localStorage.clear();
+
+                        localStorage.setItem('current_user', JSON.stringify(current_user)); // saves user to browser's local storage....
+
+                        if(diagnostic){console.log('done');} // finished...
+
+                        app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
+
+                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                        this.online_mode = !this.online_mode;
+
+                        console.log(this.online_mode)
+
                     }).catch(function (error) {
                     console.log(error);
                 });
@@ -1903,7 +1965,7 @@
             })
             this.$root.$on('populate_profile', (data)=>{
 
-                console.log(data)
+                if(diagnostic){console.log(data)}
 
                 localStorage.setItem('current_user', JSON.stringify(data)); // saves user to browser's local storage....
 
@@ -1943,11 +2005,10 @@
             })
             this.$root.$on('add_friend_to_mutual_connections', (friend)=>{
                 app.$root.$emit('update_browser','Profile', 'friends', friend.IMG); // sends to function to update browser storage....
-
-                console.log('FRIEND')
-                console.log(friend)
-
-                // app.$root.$emit('update_db','Profile', 'friends', friend_photo); // sends to function to update db storage....
+                if(diagnostic){
+                    console.log('FRIEND');
+                    console.log(friend);
+                }
             })
 
         }
@@ -2023,16 +2084,6 @@
             }
         },
         methods: {
-            populateChatWindow(index){ // call this when done...
-                this.activate(index.otherPerson);
-
-                this.chatWindowArray.splice(0); // clears out array from previous....
-
-                index.chat.forEach(msg=>{
-                    this.chatWindowArray.push({to:msg.to, from:msg.from, timestamp:msg.timestamp, msg:msg.msg});
-                })
-
-            },
             populateChatWindow_WIP(person_to_chat_with){ // call this when done...
 
                 clearInterval(this.checker);
@@ -2040,7 +2091,7 @@
                 this.checker = setInterval(()=>{
                     current_user = localStorage.getItem('current_user'); // grab user....
                     current_user = JSON.parse(current_user);
-                    console.log(current_user);
+                    if(diagnostic){console.log(current_user);}
 
                     let stuff = JSON.stringify({username: person_to_chat_with});
 
@@ -2087,7 +2138,7 @@
 
                 // current_user = localStorage.getItem('current_user'); // grab user....
                 // current_user = JSON.parse(current_user);
-                // console.log(current_user);
+                // if(diagnostic){console.log(current_user);}
                 //
                 // let stuff = JSON.stringify({username: person_to_chat_with});
                 //
@@ -2134,7 +2185,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
                 console.log({recipient: recipient, message:message})
 
@@ -2209,7 +2260,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
                 let stuff = JSON.stringify({username: person_to_chat_with});
 
@@ -2267,7 +2318,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
 
                 let config = {
@@ -2317,7 +2368,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
 
                 let config = {
@@ -2494,7 +2545,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
                 let stuff = JSON.stringify({username: username});
 
@@ -2533,7 +2584,7 @@
 
                 current_user = localStorage.getItem('current_user'); // grab user....
                 current_user = JSON.parse(current_user);
-                console.log(current_user);
+                if(diagnostic){console.log(current_user);}
 
                 let stuff = JSON.stringify({username: other_profile.others_email});
 
@@ -2682,35 +2733,94 @@
                 try{
                     switch (page) {
                         case 'Profile': // profile page... (no cases needed as the values are simply pushed by a dynamic property...)
+
                             let past_user = localStorage.getItem('current_user'); // grab old user....
-                            if(past_user !== null){ // if user exists....
+                            if(past_user !== null) { // if user exists....
                                 past_user = JSON.parse(past_user); // parse the data....
 
-                                if(diagnostic){console.log(past_user);} // log user_data
+                                if (diagnostic) {console.log(past_user);} // log user_data
 
+                                try{
+                                    switch (prop) {
+                                        case  'desc':
+                                            past_user[prop] = data; // modify data
 
-                                if(prop !== 'desc' ){
-                                    past_user[prop].push(data); // modify data
+                                            localStorage.clear(); // clears the local storage
 
-                                    localStorage.clear(); // clears the local storage
+                                            localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
 
-                                    localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+                                            app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                            app.$root.$emit('remove_popup'); // removes the popup...
+                                            break;
+                                        case  'job':
+                                            past_user[prop] = data; // modify data
 
-                                    app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
-                                    app.$root.$emit('remove_popup'); // removes the popup...
-                                }else{
-                                    past_user[prop] = data; // modify data
+                                            localStorage.clear(); // clears the local storage
 
-                                    localStorage.clear(); // clears the local storage
+                                            localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
 
-                                    localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+                                            app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                            app.$root.$emit('remove_popup'); // removes the popup...
+                                            break;
+                                        case  'major':
+                                            past_user[prop] = data; // modify data
 
-                                    app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
-                                    app.$root.$emit('remove_popup'); // removes the popup...
+                                            localStorage.clear(); // clears the local storage
 
+                                            localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+
+                                            app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                            app.$root.$emit('remove_popup'); // removes the popup...
+                                            break;
+                                        default:
+                                            past_user[prop].push(data); // modify data
+
+                                            localStorage.clear(); // clears the local storage
+
+                                            localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+
+                                            app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                                            app.$root.$emit('remove_popup'); // removes the popup...
+                                            break;
+
+                                    }
+
+                                }catch (e) {
+                                    console.log(e.message);
                                 }
-
                             }
+
+
+
+
+                            // let past_user = localStorage.getItem('current_user'); // grab old user....
+                            // if(past_user !== null){ // if user exists....
+                            //     past_user = JSON.parse(past_user); // parse the data....
+                            //
+                            //     if(diagnostic){console.log(past_user);} // log user_data
+                            //
+                            //
+                            //     if(prop !== 'desc' ){
+                            //         past_user[prop].push(data); // modify data
+                            //
+                            //         localStorage.clear(); // clears the local storage
+                            //
+                            //         localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+                            //
+                            //         app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                            //         app.$root.$emit('remove_popup'); // removes the popup...
+                            //     }else{
+                            //         past_user[prop] = data; // modify data
+                            //
+                            //         localStorage.clear(); // clears the local storage
+                            //
+                            //         localStorage.setItem('current_user', JSON.stringify(past_user)); // saves new user data to browser's local storage....
+                            //
+                            //         app.$root.$emit('populate_profile', past_user); // populates profile..... // this update is only ever called within the user profile, so it is okay to always populate the user profile after....
+                            //         app.$root.$emit('remove_popup'); // removes the popup...
+                            //
+                            //     }
+                            // }
                             break;
                         case 'Chat': // chat page...
                             break;
@@ -2732,7 +2842,7 @@
                                         current_user = localStorage.getItem('current_user'); // grab user....
                                         if(current_user !== null){
                                             current_user = JSON.parse(current_user);
-                                            console.log(current_user);
+                                            if(diagnostic){console.log(current_user);}
 
                                             let stuff = JSON.stringify({
                                                 "name": data,
@@ -2763,7 +2873,7 @@
                                         current_user = localStorage.getItem('current_user'); // grab user....
                                         if(current_user !== null){
                                             current_user = JSON.parse(current_user);
-                                            console.log(current_user);
+                                            if(diagnostic){console.log(current_user);}
 
                                             console.log('schdle data????!')
                                             console.log(data)
@@ -2835,7 +2945,7 @@
                                         current_user = localStorage.getItem('current_user'); // grab user....
                                         if(current_user !== null){
                                             current_user = JSON.parse(current_user);
-                                            console.log(current_user);
+                                            if(diagnostic){console.log(current_user);}
 
 
                                             let stuff = JSON.stringify({
@@ -2863,14 +2973,74 @@
                                                 });
                                         }
                                         break;
+                                    case 'job': // job...
+                                        current_user = localStorage.getItem('current_user'); // grab user....
+                                        if(current_user !== null){
+                                            current_user = JSON.parse(current_user);
+                                            if(diagnostic){console.log(current_user);}
+
+
+                                            let stuff = JSON.stringify({
+                                                "job": data,
+                                            });
+
+                                            let config = {
+                                                method: 'patch',
+                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                headers: {
+                                                    'Authorization': `Token ${current_user.token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data : stuff
+                                            };
+
+                                            axios(config)
+                                                .then(function (response) {
+
+                                                    console.log(JSON.stringify(response.data));
+
+                                                }).catch(function (error) {
+                                                    console.log(error);
+                                                });
+                                        }
+                                        break;
+                                    case 'major': // major...
+                                        current_user = localStorage.getItem('current_user'); // grab user....
+                                        if(current_user !== null){
+                                            current_user = JSON.parse(current_user);
+                                            if(diagnostic){console.log(current_user);}
+
+
+                                            let stuff = JSON.stringify({
+                                                "major": data,
+                                            });
+
+                                            let config = {
+                                                method: 'patch',
+                                                url: 'http://198.74.61.26:8080/profile/update/',
+                                                headers: {
+                                                    'Authorization': `Token ${current_user.token}`,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data : stuff
+                                            };
+
+                                            axios(config)
+                                                .then(function (response) {
+
+                                                    console.log(JSON.stringify(response.data));
+
+                                                }).catch(function (error) {
+                                                    console.log(error);
+                                                });
+                                        }
+                                        break;
                                     default:
                                         break;
-
                                 }
                             }catch (e) {
                                 console.log(e.message)
                             }
-
                             break;
                         case 'Chat': // chat page...
                             break;
@@ -2885,14 +3055,13 @@
             getCurrentUser(){
                 // current_user = localStorage.getItem('current_user'); // grab user....
                 // current_user = JSON.parse(current_user);
-                // console.log(current_user);
+                // if(diagnostic){console.log(current_user);}
             }
         },
         mounted(){
             this.$root.$on('go_to_page',(page)=>{
                 app.$root.$emit('clear_checker');
-                console.log('checker cleared!')
-
+                if(diagnostic){console.log('checker cleared!')}
                 try{
                     switch (page) {
                         case 'sign_up':
@@ -2926,7 +3095,6 @@
 
                             break;
                         case 'chat':
-                            // app.$root.$emit('get_latest_chat_list_and_load');
 
                             this.starting_pages.state = false; // starting pages state
 
@@ -3055,6 +3223,7 @@
                     break;
             }
         } catch (ex) {
+            console.log(ex);
         }
     })
 
@@ -3062,6 +3231,7 @@
         try {
            alert(data);
         } catch (ex) {
+            console.log(ex);
         }
     })
 
@@ -3096,17 +3266,15 @@
                 if(diagnostic){
                     console.log(data);
                     console.log(byteArray);
+                    console.log(file);
                 }
 
                 let form = new FormData();
                 form.set('file', file);
 
-                console.log(file);
-
-                // controller = new AbortController();
+                
 
                 axios.post(`./public/profile_photos`, form, {
-                    // signal: controller.signal,
 
                     onUploadProgress: progressEvent => {
                         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -3121,17 +3289,17 @@
 
                         if(res.data === 'OK'){
 
-                            console.log('fully done.');
+                            if(diagnostic){console.log('fully done.')}
 
                             webSocket.emit('js',JSON.stringify({type:'getPhotoName'}));
 
-                            console.log('Getting photoName....')
+                            if(diagnostic){console.log('Getting photoName....')}
 
 
                         }
 
                         webSocket.on('photoRes',(name)=>{
-                            console.log(name);
+                            if(diagnostic){console.log(name);}
                             app.$root.$emit('upload_complete', (name));
                             $("#photo_upload")[0].value = '';
 
@@ -3142,7 +3310,6 @@
                     })
             };
             fileReader.readAsArrayBuffer(file)
-            // $("#photo_upload")[0].value = '';
         }else{
             console.log(`file undefined`);
         }
@@ -3165,7 +3332,7 @@
 
 
     }catch (e) {
-
+        console.log(e);
     }
 </script>
 
