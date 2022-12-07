@@ -1356,6 +1356,7 @@
                                     user['on_campus'] = response.data.on_campus;
                                     user['classes'] = [];
                                     user['photoPath'] = response.data.avatar;
+                                    user['friends'] = response.data.friends;
 
 
 
@@ -1622,7 +1623,7 @@
                       <div class=subTitle>Mutual Connections</div>
                       <div class=mutualConProfilePhotosBox>
                         <div class=pPhoto_small v-for="person in index.friends">
-                          <img :src="person" class = mini_p_image>
+                          <img :src="person.profile" class = mini_p_image>
                         </div>
                       </div>
                     </div>
