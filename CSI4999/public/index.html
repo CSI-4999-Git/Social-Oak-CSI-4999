@@ -1128,6 +1128,23 @@
             margin-bottom: 25px;
         }
 
+        .google_o{
+            position: absolute;
+            top: 303px;
+            height: 45px;
+            width: 150px;
+            background-color: cornflowerblue;
+            color: white;
+            font-family: 'normal_def';
+            font-size: 1em;
+            border: none;
+            border-radius: 50px;
+            box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;
+            left: 50%;
+            transform: translate(-50%,0);
+            cursor: pointer;
+        }
+
 
 
 
@@ -1199,8 +1216,94 @@
     let msg
     let diagnostic                                     = true;
     let current_user;
-  
+    let queryString = window.location.href;
 
+
+    if(queryString !== ''){
+
+        let url = new URL(queryString);
+        let code = url.searchParams.get("code");
+        console.log(code);
+
+
+        console.log('check1')
+
+        let stuff = JSON.stringify({
+            "code": code,
+        });
+
+        let config = {
+            method: 'post',
+            url: 'http://198.74.61.26:8080/dj-rest-auth/google/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: stuff
+        };
+
+        console.log('check2')
+
+        axios(config)
+            .then(function (res) {
+
+                console.log(res.data.key);
+
+
+                let config = {
+                    method: 'get',
+                    url: 'http://198.74.61.26:8080/profile/read/',
+                    headers: {
+                        'Authorization': `Token ${res.data.key}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                axios(config)
+                    .then(function (response) {
+
+                        let user = {};
+
+
+                        if(diagnostic){console.log(response.data)}
+
+                        user['email'] = response.data.user;
+                        user['fname'] = response.data.first_name;
+                        user['lname'] = response.data.last_name;
+                        user['password'] = '';
+                        user['rePass'] = '';
+                        user['uni'] = response.data.university;
+                        user['major'] = response.data.major;
+                        user['hob'] = [];
+                        user['cls'] = response.data.class_standing;
+                        user['desc'] = response.data.about_me;
+                        user['job'] = response.data.job;
+                        user['on_campus'] = response.data.on_campus;
+                        user['classes'] = [];
+                        user['photoPath'] = response.data.avatar;
+                        user['friends'] = response.data.friends;
+                        user['token'] = res.data.key;
+
+
+
+                        localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+
+                        if(diagnostic){ console.log('done'); }
+
+
+                        app.$root.$emit('populate_profile', user); // populates profile..... // one of these should be made for each page to be populated....
+
+                        app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
+                    }).catch(function (error) {
+                    console.log(error);
+                });
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+    }
 
     webSocket.on('connect', ()=>{
 
@@ -1285,6 +1388,7 @@
                     <input type="password" class = "itext" id="password" placeholder="Password" v-model="password">
                   </div>
                   <button class = si_btn @click="signIn(username, password)">Sign In</button>
+                  <button class = google_o @click="googleOauth()">Use google account</button>
                   <div class = link @click="signUp()">Don't have an account? Sign up</div>
 <!--                  <div class = link2 @click="forgot()">Forgot Password?</div>-->
                 </div>
@@ -1377,6 +1481,11 @@
                     let err = JSON.parse(error.request.responseText);
                     alert(err.non_field_errors[0]);
                     })
+            },
+            googleOauth(){
+                window.open(`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://csi4999.dragonflare.xyz/&prompt=consent&response_type=code&client_id=541695146125-c5vfgp7981s4ec90lq9tahlfjcrnemlr.apps.googleusercontent.com&scope=openid%20email%20profile&access_type=offline`, '_blank');
+
+
             }
         },
         computed:{
