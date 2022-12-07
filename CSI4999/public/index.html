@@ -1411,6 +1411,81 @@
                 app.$root.$emit('go_to_page',('forgot'));
             },
             signIn(userN,pass){
+
+                // setTimeout(()=>{
+                //     let user = {};
+                //
+                //     let usrData = {username:userN, password:pass};
+                //
+                //
+                //     axios.post('http://198.74.61.26:8080/loginjs/', usrData)
+                //         .then((response) => {
+                //             if (response.status === 202 ) { // if login is accepted....
+                //
+                //                 if(diagnostic){console.log(response);}
+                //
+                //                 user['token'] = response.data.token;
+                //
+                //                 if(diagnostic){console.log(response);}
+                //
+                //                 if(diagnostic){console.log(response.data.token);}
+                //
+                //
+                //
+                //
+                //                 let config = {
+                //                     method: 'get',
+                //                     url: 'http://198.74.61.26:8080/profile/read/',
+                //                     headers: {
+                //                         'Authorization': `Token ${response.data.token}`,
+                //                         'Content-Type': 'application/json'
+                //                     }
+                //                 };
+                //
+                //                 axios(config)
+                //                     .then(function (response) {
+                //
+                //
+                //                         if(diagnostic){ console.log(response)}
+                //
+                //                         user['email'] = userN;
+                //                         user['fname'] = response.data.first_name;
+                //                         user['lname'] = response.data.last_name;
+                //                         user['password'] = pass;
+                //                         user['rePass'] = pass;
+                //                         user['uni'] = response.data.university;
+                //                         user['major'] = response.data.major;
+                //                         user['hob'] = [];
+                //                         user['cls'] = response.data.class_standing;
+                //                         user['desc'] = response.data.about_me;
+                //                         user['job'] = response.data.job;
+                //                         user['on_campus'] = response.data.on_campus;
+                //                         user['classes'] = [];
+                //                         user['photoPath'] = response.data.avatar;
+                //                         user['friends'] = response.data.friends;
+                //
+                //
+                //
+                //                         localStorage.setItem('current_user', JSON.stringify(user)); // saves user to browser's local storage....
+                //
+                //                         if(diagnostic){ console.log('done'); }
+                //
+                //
+                //                         app.$root.$emit('populate_profile', user); // populates profile..... // one of these should be made for each page to be populated....
+                //
+                //                         app.$root.$emit('go_to_page', ('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+                //
+                //                     }).catch(function (error) {
+                //                     console.log(error);
+                //                 });
+                //             }
+                //         }).catch(error => {
+                //         let err = JSON.parse(error.request.responseText);
+                //         alert(err.non_field_errors[0]);
+                //     })
+                // },2000)
+
+
                 let user = {};
 
                 let usrData = {username:userN, password:pass};
@@ -1481,6 +1556,8 @@
                     let err = JSON.parse(error.request.responseText);
                     alert(err.non_field_errors[0]);
                     })
+
+
             },
             googleOauth(){
                 window.open(`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://csi4999.dragonflare.xyz/&prompt=consent&response_type=code&client_id=541695146125-c5vfgp7981s4ec90lq9tahlfjcrnemlr.apps.googleusercontent.com&scope=openid%20email%20profile&access_type=offline`, '_blank');
@@ -1799,7 +1876,7 @@
                 <div class=addBtn style="position: relative; top: 0; left: 50%; transform: translate(-50%,0)" @click="add_job_major(this.jobEntry,this.majorEntry)">Change</div>
               </div>
 
-              <div class="popup" v-if="this.classes_popup" style="top: 885px">
+              <div class="popup" v-if="classes_popup" style="top: 885px">
                 <div class=pop_up_text>
                   <div class = close @click="classes_popup = false">Close</div>
                   <input class="ptext" type="text" v-model="class_addition.classname" placeholder="Class name">
@@ -2119,7 +2196,25 @@
 
             })
             this.$root.$on('add_friend_to_mutual_connections', (friend)=>{
-                app.$root.$emit('update_browser','Profile', 'friends', friend.IMG); // sends to function to update browser storage....
+                // app.$root.$emit('update_browser','Profile', 'friends', friend.IMG); // sends to function to update browser storage....
+
+                current_user = localStorage.getItem('current_user'); // grab user....
+                current_user = JSON.parse(current_user);
+                if(diagnostic){console.log(current_user);}
+
+                current_user['friends'].push({profile:friend.IMG, username:friend.others_email});
+
+
+
+                localStorage.clear(); // clears the local storage
+
+                localStorage.setItem('current_user', JSON.stringify(current_user)); // saves new user data to browser's local storage....
+
+
+                app.$root.$emit('populate_profile', current_user); // populates profile..... // one of these should be made for each page to be populated....
+
+                // app.$root.$emit('go_to_page',('Profile')); // opens the profile page..... // should be able to change 'Profile' string to any page, this way on refresh, the page will always be where last set....
+
                 if(diagnostic){
                     console.log('FRIEND');
                     console.log(friend);
